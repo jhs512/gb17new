@@ -28,7 +28,7 @@ class SecurityConfig(
                 authorize(HttpMethod.POST, "/api/*/members/login", permitAll)
                 authorize(HttpMethod.DELETE, "/api/*/members/logout", permitAll)
                 authorize(HttpMethod.POST, "/api/*/members/join", permitAll)
-                authorize("/api/v1/**", authenticated)
+                authorize("/api/*/**", authenticated)
                 authorize(anyRequest, permitAll)
             }
 
@@ -41,10 +41,6 @@ class SecurityConfig(
             csrf { disable() }
 
             formLogin { disable() }
-
-            cors {
-                configurationSource = corsConfigurationSource()
-            }
 
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
@@ -68,6 +64,7 @@ class SecurityConfig(
         configuration.allowedOrigins = listOf("https://cdpn.io", AppConfig.siteFrontUrl)
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
         configuration.allowCredentials = true
+        configuration.allowedHeaders = listOf("*")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/api/*/**", configuration)
         return source
