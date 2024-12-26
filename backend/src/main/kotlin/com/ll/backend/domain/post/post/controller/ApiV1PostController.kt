@@ -10,6 +10,8 @@ import com.ll.backend.global.rsData.RsData
 import com.ll.backend.standard.base.Empty
 import com.ll.backend.standard.extensions.getOrThrow
 import com.ll.backend.standard.page.dto.PageDto
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/posts")
 @Validated
+@Tag(name = "ApiV1PostController", description = "글 API 컨트롤러")
 class ApiV1PostController(
     private val rq: Rq,
     private val postService: PostService
@@ -28,8 +31,10 @@ class ApiV1PostController(
     val currentActor
         get() = Author(rq.actor)
 
+
     @GetMapping
     @Transactional(readOnly = true)
+    @Operation(summary = "공개글 다건조회")
     fun getItems(
         page: Int = 1,
         @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize
@@ -44,6 +49,7 @@ class ApiV1PostController(
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
+    @Operation(summary = "단건조회")
     fun getItem(
         @PathVariable id: Long
     ): PostWithBodyDto {
@@ -63,6 +69,7 @@ class ApiV1PostController(
 
     @PostMapping
     @Transactional
+    @Operation(summary = "글 작성")
     fun write(
         @RequestBody @Valid reqBody: PostWriteReqBody
     ): RsData<PostDto> {
@@ -80,8 +87,11 @@ class ApiV1PostController(
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "글 삭제")
     fun delete(@PathVariable id: Long): RsData<Empty> {
-        val post = postService.findById(id).getOrThrow()
+        val post = postService
+            .findById(id)
+            .getOrThrow()
 
         postService.checkPermissionToDelete(currentActor, post)
 
@@ -101,6 +111,7 @@ class ApiV1PostController(
 
     @PutMapping("/{id}")
     @Transactional
+    @Operation(summary = "글 수정")
     fun modify(
         @PathVariable id: Long,
         @RequestBody @Valid reqBody: PostModifyReqBody

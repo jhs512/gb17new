@@ -7,16 +7,19 @@ import com.ll.backend.global.rq.Rq
 import com.ll.backend.global.rsData.RsData
 import com.ll.backend.standard.base.Empty
 import com.ll.backend.standard.extensions.getOrThrow
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 @RequestMapping("/api/v1/members")
+@Transactional
+@Tag(name = "ApiV1MemberController", description = "회원 API 컨트롤러")
 class ApiV1MemberController(
     private val memberService: MemberService,
     private val rq: Rq
@@ -27,20 +30,16 @@ class ApiV1MemberController(
 
     data class MemberJoinReqBody(
         @field:NotBlank
-        @field:NotNull
         val username: String,
-
         @field:NotBlank
-        @field:NotNull
         val password: String,
-
         @field:NotBlank
-        @field:NotNull
         val nickname: String
     )
 
     @PostMapping("/join")
     @Transactional
+    @Operation(summary = "회원가입")
     fun join(
         @RequestBody @Valid reqBody: MemberJoinReqBody
     ): RsData<MemberDto> {
@@ -56,10 +55,8 @@ class ApiV1MemberController(
 
     data class MemberLoginReqBody(
         @field:NotBlank
-        @field:NotNull
         val username: String,
         @field:NotBlank
-        @field:NotNull
         val password: String,
     )
 
@@ -71,6 +68,7 @@ class ApiV1MemberController(
 
     @PostMapping("/login")
     @Transactional
+    @Operation(summary = "로그인")
     fun login(
         @RequestBody @Valid reqBody: MemberLoginReqBody
     ): RsData<MemberLoginResBody> {
@@ -98,6 +96,8 @@ class ApiV1MemberController(
 
 
     @DeleteMapping("/logout")
+    @Transactional
+    @Operation(summary = "로그아웃")
     fun logout(req: HttpServletRequest): RsData<Empty> {
         rq.removeAuthCookies()
         return RsData("200-1", "로그아웃 되었습니다.")
@@ -106,8 +106,10 @@ class ApiV1MemberController(
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
+    @Operation(summary = "내 정보")
     fun me(): RsData<MemberDto> {
         val member = memberService.findById(currentActor.id).getOrThrow()
+
         return RsData("200-1", "OK", MemberDto(member))
     }
 }

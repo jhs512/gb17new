@@ -54,7 +54,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handle(ex: MethodArgumentNotValidException): ResponseEntity<RsData<Void>> {
+    fun handle(ex: MethodArgumentNotValidException): ResponseEntity<RsData<Empty>> {
         if (AppConfig.isNotProd()) ex.printStackTrace()
 
         val message = ex.bindingResult
