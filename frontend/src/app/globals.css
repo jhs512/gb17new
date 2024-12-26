@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -69,4 +65,12 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+html > body .toastui-editor-contents {
+  font-family: var(--font-pretendard);
+}
+
+html > body .toastui-editor-contents code {
+  font-size: 1rem;
 }

@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Viewer } from "@/components/viewer";
 import { client } from "@/lib/backend/client";
 import { cookies } from "next/headers";
 
@@ -60,8 +61,8 @@ export default async function PostDetail({
                 )}
               </div>
               {post.content && (
-                <div className="prose max-w-none">
-                  <p className="whitespace-pre-wrap">{post.content}</p>
+                <div className="prose prose-neutral dark:prose-invert max-w-none">
+                  <Viewer initialValue={post.content} />
                 </div>
               )}
             </div>
