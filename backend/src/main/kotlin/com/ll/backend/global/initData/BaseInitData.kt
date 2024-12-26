@@ -54,6 +54,70 @@ class BaseInitData(
         val memberUser2 = memberService.findByUsername("user2").getOrThrow()
 
         postService.write(Author(memberUser1), "안녕하세요.", "반갑습니다.", true)
-        postService.write(Author(memberUser2), "Hello.", "# Nice to meet you.", true)
+        postService.write(Author(memberUser2), "Hello.", "Nice to meet you.", true)
+        postService.write(
+            Author(memberUser2), "반갑습니다.", """
+            ${'$'}${'$'}chart
+            ,category1,category2
+            Jan,21,23
+            Feb,31,17
+            
+            type: column
+            title: Monthly Revenue
+            x.title: Amount
+            y.title: Month
+            y.min: 1
+            y.max: 40
+            y.suffix: ${'$'}
+            ${'$'}${'$'}
+            ```js
+            console.log('foo')
+            ```
+            ```javascript
+            console.log('bar')
+            ```
+            ```html
+            <div id="editor"><span>baz</span></div>
+            ```
+            ```wrong
+            [1 2 3]
+            ```
+            ```clojure
+            [1 2 3]
+            ```
+            | @cols=2:merged |
+            | --- | --- |
+            | table | table2 |
+            ${'$'}${'$'}uml
+            partition Conductor {
+              (*) --> "Climbs on Platform"
+              --> === S1 ===
+              --> Bows
+            }
+            
+            partition Audience #LightSkyBlue {
+              === S1 === --> Applauds
+            }
+            
+            partition Conductor {
+              Bows --> === S2 ===
+              --> WavesArmes
+              Applauds --> === S2 ===
+            }
+            
+            partition Orchestra #CCCCEE {
+              WavesArmes --> Introduction
+              --> "Play music"
+            }
+            ${'$'}${'$'}
+            
+            # 자바
+            ## 자바입니다.
+            
+            ```java
+            int a = 10;
+            ```
+        """.trimIndent(), true
+        )
     }
 }
