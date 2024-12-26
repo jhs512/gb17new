@@ -22,7 +22,7 @@ const client = createClient<paths>({
 });
 
 interface PageProps {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: { page?: string };
 }
 
 export default async function Home({ searchParams }: PageProps) {
@@ -37,7 +37,9 @@ export default async function Home({ searchParams }: PageProps) {
     },
   });
 
-  const totalPages = Math.ceil((res.data?.totalItems || 0) / 10);
+  const resData = res.data!!;
+
+  const totalPages = resData.totalPages;
 
   return (
     <main className="container mx-auto py-8 px-4">
@@ -45,14 +47,14 @@ export default async function Home({ searchParams }: PageProps) {
         <div className="space-y-1">
           <h1 className="text-3xl font-bold tracking-tight">게시판</h1>
           <p className="text-muted-foreground">
-            총 {res.data?.totalItems || 0}개의 글이 있습니다
+            총 {resData.totalItems || 0}개의 글이 있습니다
           </p>
         </div>
 
         <Separator />
 
         <div className="grid gap-4">
-          {res.data?.items.map((post) => (
+          {resData.items.map((post) => (
             <Card key={post.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">

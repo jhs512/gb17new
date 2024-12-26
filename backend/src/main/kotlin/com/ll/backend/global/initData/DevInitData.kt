@@ -39,6 +39,8 @@ class DevInitData(
         Ut.file.moveFile(downloadFilePath, "apiV1.json")
 
         val sb = StringBuilder()
+        sb.append("rm -f apiV1.json")
+        sb.append(" && ")
         sb.append("npx --package typescript --package openapi-typescript openapi-typescript apiV1.json -o ../frontend/src/lib/backend/apiV1/schema.d.ts")
         sb.append(" && ")
         sb.append("rm -f apiV1.json")
