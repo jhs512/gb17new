@@ -42,6 +42,10 @@ class SecurityConfig(
 
             formLogin { disable() }
 
+            cors {
+                configurationSource = corsConfigurationSource()
+            }
+
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
 
             exceptionHandling {
