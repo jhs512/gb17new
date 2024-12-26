@@ -1,0 +1,71 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: dev
+    include: secret
+  datasource:
+    hikari:
+      auto-commit: false
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:./db_dev;MODE=MySQL
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            clientId: ON_SECRET
+            scope: profile_nickname, profile_image
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: '${custom.site.backUrl}/{action}/oauth2/code/{registrationId}'
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+logging:
+  level:
+    com.ll.backend: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.transaction.interceptor: TRACE
+custom:
+  dev:
+    cookieDomain: localhost
+    frontUrl: "http://${custom.dev.cookieDomain}:3000"
+    backUrl: "http://${custom.dev.cookieDomain}:${server.port}"
+  prod:
+    cookieDomain: www.gb17.oa.gg
+    frontUrl: "https://${custom.prod.cookieDomain}"
+    backUrl: "https://api.${custom.prod.cookieDomain}"
+  site:
+    cookieDomain: "${custom.dev.cookieDomain}"
+    frontUrl: "${custom.dev.frontUrl}"
+    backUrl: "${custom.dev.backUrl}"
+    name: gb17
+  jwt:
+    secretKey: abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789
+  accessToken:
+    expirationSec: '#{60*60}'
+  temp:
+    dirPath: c:/temp/gb17_dev/temp
+  genFile:
+    dirPath: c:/temp/gb17_dev
