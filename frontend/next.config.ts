@@ -9,7 +9,11 @@ declare global {
 }
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: [
+    "@toast-ui/editor",
+    "@toast-ui/react-editor",
+    "tui-color-picker",
+  ],
 };
 
 export default nextConfig;

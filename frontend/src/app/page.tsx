@@ -1,4 +1,10 @@
-import { PostCard } from "@/components/post-card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
@@ -16,9 +22,7 @@ export default async function Home({
 }: {
   searchParams: { page?: string };
 }) {
-  const { page } = await searchParams;
-
-  const currentPage = Math.max(1, Number(page ?? 1));
+  const currentPage = Number(searchParams.page || 1);
 
   const res = await client.GET("/api/v1/posts", {
     query: {
@@ -46,13 +50,28 @@ export default async function Home({
 
         <div className="grid gap-4">
           {resData.items.map((post) => (
-            <PostCard
-              key={post.id}
-              title={post.title}
-              createDate={post.createDate}
-              authorName={post.authorName}
-              published={post.published}
-            />
+            <Card key={post.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">{post.title}</CardTitle>
+                  <CardDescription>
+                    {new Date(post.createDate).toLocaleDateString("ko-KR", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>작성자: {post.authorName}</span>
+                  {!post.published && (
+                    <span className="text-destructive">(비공개)</span>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 

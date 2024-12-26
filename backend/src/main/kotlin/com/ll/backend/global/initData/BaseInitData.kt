@@ -54,6 +54,6 @@ class BaseInitData(
         val memberUser2 = memberService.findByUsername("user2").getOrThrow()
 
         postService.write(Author(memberUser1), "안녕하세요.", "반갑습니다.", true)
-        postService.write(Author(memberUser2), "Hello.", "Nice to meet you.", true)
+        postService.write(Author(memberUser2), "Hello.", "# Nice to meet you.", true)
     }
 }
