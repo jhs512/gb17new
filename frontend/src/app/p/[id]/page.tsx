@@ -1,14 +1,22 @@
+import { PostCard } from "@/components/post-card";
 import { Separator } from "@/components/ui/separator";
 import { client } from "@/lib/backend/client";
-import { PostCard } from "@/components/post-card";
+import { cookies } from "next/headers";
 
-export default async function PostDetail({ params }: { params: { id: string } }) {
+export default async function PostDetail({
+  params,
+}: {
+  params: { id: string };
+}) {
   const id = params.id;
   const res = await client.GET("/api/v1/posts/{id}", {
     params: {
       path: {
         id: parseInt(id),
       },
+    },
+    headers: {
+      cookie: (await cookies()).toString(),
     },
   });
 
