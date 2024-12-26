@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PostCard } from "@/components/post-card";
 import {
   Pagination,
   PaginationContent,
@@ -15,13 +9,13 @@ import {
 } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import { client } from "@/lib/backend/client";
-import { PostCard } from "@/components/post-card";
+import { cookies } from "next/headers";
 
-interface PageProps {
+export default async function Home({
+  searchParams,
+}: {
   searchParams: { page?: string };
-}
-
-export default async function Home({ searchParams }: PageProps) {
+}) {
   const { page } = await searchParams;
 
   const currentPage = Math.max(1, Number(page ?? 1));
@@ -31,11 +25,12 @@ export default async function Home({ searchParams }: PageProps) {
       page: currentPage,
       size: 10,
     },
+    headers: {
+      cookie: (await cookies()).toString(),
+    },
   });
 
   const resData = res.data!!;
-
-  const totalPages = resData.totalPages;
 
   return (
     <main className="container mx-auto py-8 px-4">
@@ -61,7 +56,7 @@ export default async function Home({ searchParams }: PageProps) {
           ))}
         </div>
 
-        {totalPages > 1 && (
+        {resData.totalPages > 1 && (
           <Pagination>
             <PaginationContent>
               {currentPage > 1 && (
@@ -70,7 +65,7 @@ export default async function Home({ searchParams }: PageProps) {
                 </PaginationItem>
               )}
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              {Array.from({ length: resData.totalPages }, (_, i) => i + 1).map(
                 (page) => (
                   <PaginationItem key={page}>
                     <PaginationLink
@@ -83,7 +78,7 @@ export default async function Home({ searchParams }: PageProps) {
                 )
               )}
 
-              {currentPage < totalPages && (
+              {currentPage < resData.totalPages && (
                 <PaginationItem>
                   <PaginationNext href={`?page=${currentPage + 1}`} />
                 </PaginationItem>
