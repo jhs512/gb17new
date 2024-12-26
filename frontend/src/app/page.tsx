@@ -14,12 +14,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
-import { paths } from "@/lib/backend/apiV1/schema";
-import createClient from "openapi-fetch";
-
-const client = createClient<paths>({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-});
+import { client } from "@/lib/backend/client";
+import { PostCard } from "@/components/post-card";
 
 interface PageProps {
   searchParams: { page?: string };
@@ -55,28 +51,13 @@ export default async function Home({ searchParams }: PageProps) {
 
         <div className="grid gap-4">
           {resData.items.map((post) => (
-            <Card key={post.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">{post.title}</CardTitle>
-                  <CardDescription>
-                    {new Date(post.createDate).toLocaleDateString("ko-KR", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>작성자: {post.authorName}</span>
-                  {!post.published && (
-                    <span className="text-destructive">(비공개)</span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <PostCard
+              key={post.id}
+              title={post.title}
+              createDate={post.createDate}
+              authorName={post.authorName}
+              published={post.published}
+            />
           ))}
         </div>
 
