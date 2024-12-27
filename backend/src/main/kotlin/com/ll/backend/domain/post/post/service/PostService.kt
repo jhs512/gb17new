@@ -37,10 +37,23 @@ class PostService(
         return postRepository.save(post)
     }
 
-    fun findByPublishedPaged(published: Boolean, page: Int, pageSize: Int): Page<Post> {
+    fun findByPublishedAndSearchKeywordPaged(
+        published: Boolean,
+        searchKeyword: String,
+        page: Int,
+        pageSize: Int
+    ): Page<Post> {
         val pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
 
-        return postRepository.findByPublished(published, pageable)
+        if (searchKeyword.isBlank()) {
+            return postRepository.findByPublished(published, pageable)
+        }
+
+        return postRepository.findByPublishedAndBody_ContentLike(published, "%$searchKeyword%", pageable)
+    }
+
+    fun findByPublishedPaged(published: Boolean, page: Int, pageSize: Int): Page<Post> {
+        return findByPublishedAndSearchKeywordPaged(published, "", page, pageSize)
     }
 
     fun delete(post: Post) {

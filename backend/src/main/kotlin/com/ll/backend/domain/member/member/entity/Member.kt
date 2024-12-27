@@ -20,7 +20,7 @@ class Member(
     @Column(unique = true, length = 30)
     var refreshToken: String,
 
-    @Column(length = 100)
+    @Column(length = 150)
     var profileImgUrl: String = ""
 ) : BaseTime() {
     constructor(

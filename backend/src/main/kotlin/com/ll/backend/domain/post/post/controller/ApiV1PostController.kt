@@ -37,11 +37,12 @@ class ApiV1PostController(
     @Operation(summary = "공개글 다건조회")
     fun getItems(
         page: Int = 1,
-        @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize
+        @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        searchKeyword: String = ""
     ): PageDto<PostDto> {
         return PageDto(
             postService
-                .findByPublishedPaged(true, page, pageSize)
+                .findByPublishedAndSearchKeywordPaged(true, searchKeyword, page, pageSize)
                 .map { PostDto(it) }
         )
     }

@@ -7,4 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface PostRepository : JpaRepository<Post, Long> {
     fun findByPublished(published: Boolean, pageable: PageRequest): Page<Post>
+    fun findByPublishedAndBody_ContentLike(
+        published: Boolean,
+        searchKeyword2: String,
+        pageable: PageRequest
+    ): Page<Post>
 }

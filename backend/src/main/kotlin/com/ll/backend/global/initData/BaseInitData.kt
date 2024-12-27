@@ -117,6 +117,14 @@ class BaseInitData(
             ```java
             int a = 10;
             ```
+            
+            - [ ] 하하
+            - [ ] 호호
+            
+            1. - [ ] [문제 - 배열에 과일이름들을 담아주세요, push 사용](https://codepen.io/jangka44/pen/abEppor?editors=0012)
+                - [정답예시](https://codepen.io/jangka44/pen/ExoZNqJ?editors=0102)
+                - [정답](https://codepen.io/jangka44/pen/ExoZNqJ?editors=0012)
+            1. - [ ] [문제 - 배열에 과일이름들을 담아주세요, push 사용](https://codepen.io/jangka44/pen/abEppor?editors=0012)
         """.trimIndent(), true
         )
     }

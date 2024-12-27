@@ -17,7 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val customAuthenticationEntryPoint: AuthenticationEntryPoint,
-    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler
+    private val customAuthenticationSuccessHandler: CustomAuthenticationSuccessHandler,
+    private val customAuthorizationRequestResolver: CustomAuthorizationRequestResolver
 ) {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
@@ -51,6 +52,9 @@ class SecurityConfig(
             addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthenticationFilter)
 
             oauth2Login {
+                authorizationEndpoint {
+                    authorizationRequestResolver = customAuthorizationRequestResolver
+                }
                 authenticationSuccessHandler = customAuthenticationSuccessHandler
             }
         }

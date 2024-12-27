@@ -13,6 +13,13 @@ class CustomAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSucces
         response: HttpServletResponse?,
         authentication: Authentication?
     ) {
+        val state = request?.getParameter("state")
+        
+        if (!state.isNullOrEmpty()) {
+            // state 값 활용
+            // ...
+        }
+
         super.onAuthenticationSuccess(request, response, authentication)
     }
 }

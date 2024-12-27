@@ -128,9 +128,9 @@ const ViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
           chart,
           {
             minWidth: 100,
-            maxWidth: 600,
+            maxWidth: 800,
             minHeight: 100,
-            maxHeight: 300,
+            maxHeight: 400,
           },
         ],
         [codeSyntaxHighlight],

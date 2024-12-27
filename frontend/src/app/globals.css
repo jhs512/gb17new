@@ -69,8 +69,10 @@
 
 html > body .toastui-editor-contents {
   font-family: var(--font-pretendard);
+  font-size: 1rem;
 }
 
 html > body .toastui-editor-contents code {
-  font-size: 1rem;
+  font-family: inherit;
+  font-size: inherit;
 }

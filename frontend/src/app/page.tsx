@@ -20,13 +20,22 @@ import { cookies } from "next/headers";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; searchKeyword?: string };
 }) {
-  const currentPage = Number(searchParams.page || 1);
+  const { page, searchKeyword } = await searchParams;
+
+  const currentPage = Number(page || 1);
+
+  console.log({
+    page: currentPage,
+    searchKeyword,
+    size: 10,
+  });
 
   const res = await client.GET("/api/v1/posts", {
     query: {
       page: currentPage,
+      searchKeyword,
       size: 10,
     },
     headers: {
