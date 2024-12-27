@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Viewer } from "@/components/viewer";
-import { client } from "@/lib/backend/client";
+import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 
 export default async function PostDetail({

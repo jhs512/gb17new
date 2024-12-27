@@ -1,5 +1,7 @@
 package com.ll.backend.domain.post.post.controller
 
+import com.ll.backend.domain.member.member.service.MemberService
+import com.ll.backend.domain.post.author.entity.Author
 import com.ll.backend.domain.post.post.entity.Post
 import com.ll.backend.domain.post.post.service.PostService
 import com.ll.backend.global.app.AppConfig
@@ -33,6 +35,9 @@ class ApiV1PostControllerTest @Autowired constructor(
     private val postService: PostService,
     private val mockMvc: MockMvc
 ) {
+    @Autowired
+    private lateinit var memberService: MemberService
+
     private fun bodyToRsData(resultActions: ResultActions): RsData<Map<String, *>> {
         val contentAsString = resultActions.andReturn().response.contentAsString
         return Ut.json.toObj(contentAsString)
@@ -88,10 +93,10 @@ class ApiV1PostControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val postPage: Page<Post> = postService
             .findByPublishedPaged(true, 1, AppConfig.basePageSize)
 
-        // THEN
         resultActions
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.items.length()").value(postPage.numberOfElements))
@@ -123,10 +128,10 @@ class ApiV1PostControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val postPage = postService
             .findByPublishedPaged(true, 2, 1)
 
-        // THEN
         resultActions
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.items.length()").value(postPage.numberOfElements))
@@ -167,12 +172,12 @@ class ApiV1PostControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val rsData = bodyToRsData(resultActions)
         val newPostId = rsData.data["id"] as Int
 
         assertThat(newPostId).isGreaterThan(2)
 
-        // THEN
         resultActions
             .andExpect(status().isCreated)
             .andExpect(jsonPath("$.resultCode").value("201-1"))
@@ -343,8 +348,8 @@ class ApiV1PostControllerTest @Autowired constructor(
     }
 
     @Test
-    @WithUserDetails("user1")
     @DisplayName("DELETE /api/v1/posts/2, no permission to delete, 403")
+    @WithUserDetails("user1")
     fun t13() {
         // WHEN
         val resultActions = mockMvc
@@ -358,5 +363,99 @@ class ApiV1PostControllerTest @Autowired constructor(
             .andExpect(status().isForbidden)
             .andExpect(jsonPath("$.resultCode").value("403-1"))
             .andExpect(jsonPath("$.msg").value("글의 작성자만 삭제할 수 있습니다."))
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/mine")
+    @WithUserDetails("user1")
+    fun t14() {
+        // WHEN
+        val resultActions = mockMvc
+            .perform(
+                get("/api/v1/posts/mine")
+            )
+            .andDo(print())
+
+        // THEN
+        val postPage = postService
+            .findByAuthorAndSearchKeywordPaged(
+                Author(
+                    memberService.findByUsername("user1").getOrThrow()
+                ),
+                "",
+                1,
+                AppConfig.basePageSize
+            )
+
+        // THEN
+        resultActions
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.items.length()").value(postPage.numberOfElements))
+            .andExpect(jsonPath("$.totalItems").value(postPage.totalElements))
+            .andExpect(jsonPath("$.totalPages").value(postPage.totalPages))
+            .andExpect(jsonPath("$.currentPageNumber").value(postPage.number + 1))
+            .andExpect(jsonPath("$.pageSize").value(postPage.size))
+
+        val posts = postPage.content
+
+        for (i in posts.indices) {
+            resultActions
+                .andExpect(jsonPath("$.items[$i].id").value(posts[i].id))
+                .andExpect(jsonPath("$.items[$i].title").value(posts[i].title))
+                .andExpect(jsonPath("$.items[$i].content").doesNotExist())
+                .andExpect(jsonPath("$.items[$i].published").value(posts[i].published))
+        }
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/mine, without user, 401")
+    fun t15() {
+        // WHEN
+        val resultActions = mockMvc
+            .perform(
+                get("/api/v1/posts/mine")
+            )
+            .andDo(print())
+
+        // THEN
+        resultActions
+            .andExpect(status().isUnauthorized)
+            .andExpect(jsonPath("$.resultCode").value("401-1"))
+            .andExpect(jsonPath("$.msg").value("로그인 후 이용해주세요."))
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/4, without user, 403")
+    fun t16() {
+        // WHEN
+        val resultActions = mockMvc
+            .perform(
+                get("/api/v1/posts/4")
+            )
+            .andDo(print())
+
+        // THEN
+        resultActions
+            .andExpect(status().isForbidden)
+            .andExpect(jsonPath("$.resultCode").value("403-1"))
+            .andExpect(jsonPath("$.msg").value("비공개글은 작성자만 조회할 수 있습니다."))
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/posts/4, with user1, 403")
+    @WithUserDetails("user1")
+    fun t17() {
+        // WHEN
+        val resultActions = mockMvc
+            .perform(
+                get("/api/v1/posts/4")
+            )
+            .andDo(print())
+
+        // THEN
+        resultActions
+            .andExpect(status().isForbidden)
+            .andExpect(jsonPath("$.resultCode").value("403-1"))
+            .andExpect(jsonPath("$.msg").value("비공개글은 작성자만 조회할 수 있습니다."))
     }
 }

@@ -1,6 +1,7 @@
 package com.ll.backend.global.rq
 
 import com.ll.backend.domain.member.member.entity.Member
+import com.ll.backend.domain.member.member.service.MemberService
 import com.ll.backend.global.app.AppConfig
 import com.ll.backend.global.exceptions.ServiceException
 import com.ll.backend.global.security.SecurityUser
@@ -16,10 +17,11 @@ import org.springframework.web.context.annotation.RequestScope
 @Component
 class Rq(
     val req: HttpServletRequest,
-    val res: HttpServletResponse
+    val res: HttpServletResponse,
+    val memberService: MemberService
 ) {
     val isLogin: Boolean by lazy {
-        SecurityContextHolder.getContext()?.authentication?.isAuthenticated ?: false
+        SecurityContextHolder.getContext()?.authentication?.principal as? SecurityUser != null
     }
 
     val user: SecurityUser by lazy {
@@ -42,9 +44,16 @@ class Rq(
         SecurityContextHolder.getContext().authentication = securityUser.genAuthentication()
     }
 
-    fun makeAuthCookies(accessToken: String, refreshToken: String) {
+    private fun makeAuthCookies(accessToken: String, refreshToken: String) {
         setCrossDomainCookie("accessToken", accessToken)
         setCrossDomainCookie("refreshToken", refreshToken)
+    }
+
+    fun makeAuthCookies(member: Member) {
+        val accessToken = memberService.genAccessToken(member)
+        val refreshToken = member.refreshToken
+
+        makeAuthCookies(accessToken, refreshToken)
     }
 
     fun removeAuthCookies() {

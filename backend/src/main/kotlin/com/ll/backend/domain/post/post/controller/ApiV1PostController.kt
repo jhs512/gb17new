@@ -5,6 +5,7 @@ import com.ll.backend.domain.post.post.dto.PostDto
 import com.ll.backend.domain.post.post.dto.PostWithBodyDto
 import com.ll.backend.domain.post.post.service.PostService
 import com.ll.backend.global.app.AppConfig
+import com.ll.backend.global.exceptions.ServiceException
 import com.ll.backend.global.rq.Rq
 import com.ll.backend.global.rsData.RsData
 import com.ll.backend.standard.base.Empty
@@ -42,7 +43,33 @@ class ApiV1PostController(
     ): PageDto<PostDto> {
         return PageDto(
             postService
-                .findByPublishedAndSearchKeywordPaged(true, searchKeyword, page, pageSize)
+                .findByPublishedAndSearchKeywordPaged(
+                    true,
+                    searchKeyword,
+                    page,
+                    pageSize
+                )
+                .map { PostDto(it) }
+        )
+    }
+
+
+    @GetMapping("/mine")
+    @Transactional(readOnly = true)
+    @Operation(summary = "내글 다건조회")
+    fun getMine(
+        page: Int = 1,
+        @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        searchKeyword: String = ""
+    ): PageDto<PostDto> {
+        return PageDto(
+            postService
+                .findByAuthorAndSearchKeywordPaged(
+                    currentActor,
+                    searchKeyword,
+                    page,
+                    pageSize
+                )
                 .map { PostDto(it) }
         )
     }
@@ -54,9 +81,17 @@ class ApiV1PostController(
     fun getItem(
         @PathVariable id: Long
     ): PostWithBodyDto {
-        return postService.findById(id)
+        val post = postService.findById(id)
             .getOrThrow()
-            .let { PostWithBodyDto(it) }
+
+        if (!post.published && !rq.isLogin) {
+            throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
+        }
+
+        if (!post.published)
+            postService.checkPermissionToRead(currentActor, post)
+
+        return PostWithBodyDto(post)
     }
 
 

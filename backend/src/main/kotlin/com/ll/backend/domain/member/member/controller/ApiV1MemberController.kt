@@ -78,10 +78,7 @@ class ApiV1MemberController(
 
         memberService.checkPasswordValidation(reqBody.password, member.password)
 
-        val accessToken = memberService.genAccessToken(member)
-        val refreshToken = member.refreshToken
-
-        rq.makeAuthCookies(accessToken, refreshToken)
+        rq.makeAuthCookies(member)
 
         return RsData(
             "201-1",

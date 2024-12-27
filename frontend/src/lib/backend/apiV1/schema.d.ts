@@ -75,6 +75,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내글 다건조회 */
+        get: operations["getMine"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/members/me": {
         parameters: {
             query?: never;
@@ -113,6 +130,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Empty: Record<string, never>;
+        RsDataEmpty: {
+            resultCode: string;
+            msg: string;
+            data: components["schemas"]["Empty"];
+        };
         PostModifyReqBody: {
             title: string;
             content: string;
@@ -154,6 +177,9 @@ export interface components {
             modifyDate: string;
             nickname: string;
             name: string;
+            profileImgUrl: string;
+            authorities: string[];
+            social: boolean;
         };
         MemberLoginResBody: {
             item: components["schemas"]["MemberDto"];
@@ -200,12 +226,6 @@ export interface components {
             content: string;
             published: boolean;
         };
-        Empty: Record<string, never>;
-        RsDataEmpty: {
-            resultCode: string;
-            msg: string;
-            data: components["schemas"]["Empty"];
-        };
     };
     responses: never;
     parameters: never;
@@ -235,6 +255,15 @@ export interface operations {
                     "application/json": components["schemas"]["PostWithBodyDto"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     modify: {
@@ -261,6 +290,15 @@ export interface operations {
                     "application/json": components["schemas"]["RsDataPostDto"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     delete: {
@@ -283,6 +321,15 @@ export interface operations {
                     "application/json": components["schemas"]["RsDataEmpty"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     getItems: {
@@ -290,6 +337,7 @@ export interface operations {
             query?: {
                 page?: number;
                 pageSize?: number;
+                searchKeyword?: string;
             };
             header?: never;
             path?: never;
@@ -304,6 +352,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PageDtoPostDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
                 };
             };
         };
@@ -330,6 +387,15 @@ export interface operations {
                     "application/json": components["schemas"]["RsDataPostDto"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     login: {
@@ -352,6 +418,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RsDataMemberLoginResBody"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
                 };
             };
         };
@@ -378,6 +453,48 @@ export interface operations {
                     "application/json": components["schemas"]["RsDataMemberDto"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getMine: {
+        parameters: {
+            query?: {
+                page?: number;
+                pageSize?: number;
+                searchKeyword?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageDtoPostDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     me: {
@@ -398,6 +515,15 @@ export interface operations {
                     "application/json": components["schemas"]["RsDataMemberDto"];
                 };
             };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
         };
     };
     logout: {
@@ -411,6 +537,15 @@ export interface operations {
         responses: {
             /** @description OK */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

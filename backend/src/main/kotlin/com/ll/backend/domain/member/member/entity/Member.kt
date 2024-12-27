@@ -45,4 +45,7 @@ class Member(
 
             return listOf()
         }
+
+    val profileImgUrlOrDefault
+        get() = profileImgUrl.ifBlank { "https://placehold.co/640x640?text=O_O" }
 }

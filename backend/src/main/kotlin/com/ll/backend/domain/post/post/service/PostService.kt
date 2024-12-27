@@ -37,6 +37,37 @@ class PostService(
         return postRepository.save(post)
     }
 
+    fun findByAuthorAndSearchKeywordPaged(
+        author: Author,
+        searchKeyword: String,
+        page: Int,
+        pageSize: Int
+    ): Page<Post> {
+        val pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
+
+        if (searchKeyword.isBlank()) {
+            return postRepository.findByAuthor(
+                author,
+                pageable
+            )
+        }
+
+        return postRepository.findByAuthorAndBody_ContentLike(
+            author,
+            "%$searchKeyword%",
+            pageable
+        )
+    }
+
+    fun findByPublishedPaged(published: Boolean, page: Int, pageSize: Int): Page<Post> {
+        return findByPublishedAndSearchKeywordPaged(
+            published,
+            "",
+            page,
+            pageSize
+        )
+    }
+
     fun findByPublishedAndSearchKeywordPaged(
         published: Boolean,
         searchKeyword: String,
@@ -46,14 +77,17 @@ class PostService(
         val pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
 
         if (searchKeyword.isBlank()) {
-            return postRepository.findByPublished(published, pageable)
+            return postRepository.findByPublished(
+                published,
+                pageable
+            )
         }
 
-        return postRepository.findByPublishedAndBody_ContentLike(published, "%$searchKeyword%", pageable)
-    }
-
-    fun findByPublishedPaged(published: Boolean, page: Int, pageSize: Int): Page<Post> {
-        return findByPublishedAndSearchKeywordPaged(published, "", page, pageSize)
+        return postRepository.findByPublishedAndBody_ContentLike(
+            published,
+            "%$searchKeyword%",
+            pageable
+        )
     }
 
     fun delete(post: Post) {
@@ -76,5 +110,11 @@ class PostService(
 
     fun checkPermissionToWrite(actor: Author) {
         // 로그인이 되었다면 누구나 가능
+    }
+
+    fun checkPermissionToRead(actor: Author, post: Post) {
+        if (post.published) return
+
+        if (actor != post.author) throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
     }
 }

@@ -35,17 +35,20 @@ class DevInitData(
     fun work1() {
         val backUrl = AppConfig.siteBackUrl
 
+        val cmd1Sb = StringBuilder()
+        cmd1Sb.append("rm -f apiV1.json")
+
+        Ut.cmd.runAsync(cmd1Sb.toString())
+
         val downloadFilePath: String = Ut.file.downloadFileByHttp("$backUrl/v3/api-docs/apiV1", ".")
         Ut.file.moveFile(downloadFilePath, "apiV1.json")
 
-        val sb = StringBuilder()
-        sb.append("rm -f apiV1.json")
-        sb.append(" && ")
-        sb.append("npx --package typescript --package openapi-typescript openapi-typescript apiV1.json -o ../frontend/src/lib/backend/apiV1/schema.d.ts")
-        sb.append(" && ")
-        sb.append("rm -f apiV1.json")
+        val cmd2Sb = StringBuilder()
+        cmd2Sb.append("npx --package typescript --package openapi-typescript openapi-typescript apiV1.json -o ../frontend/src/lib/backend/apiV1/schema.d.ts")
+        cmd2Sb.append(" && ")
+        cmd2Sb.append("rm -f apiV1.json")
 
-        Ut.cmd.runAsync(sb.toString())
+        Ut.cmd.runAsync(cmd2Sb.toString())
     }
 
     @Transactional

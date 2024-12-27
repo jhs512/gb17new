@@ -46,49 +46,129 @@ function filterObjectKeys(obj: { [key: string]: any }, allowedKeys: string[]) {
 function youtubePlugin() {
   const toHTMLRenderers = {
     youtube(node: any) {
-      const url = node.literal;
-      let youtubeId = url.replace(
-        /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/,
-        "$1"
-      );
+      const html = renderYoutube(node.literal);
 
       return [
-        {
-          type: "openTag",
-          tagName: "div",
-          outerNewLine: true,
-          attributes: { class: "aspect-[16/9] relative max-w-[500px] mx-auto" },
-        },
-        {
-          type: "html",
-          content: `<iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/${youtubeId}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
-        },
+        { type: "openTag", tagName: "div", outerNewLine: true },
+        { type: "html", content: html },
         { type: "closeTag", tagName: "div", outerNewLine: true },
       ];
     },
   };
+
+  function renderYoutube(url: string) {
+    url = url.replace("https://www.youtube.com/watch?v=", "");
+    url = url.replace("http://www.youtube.com/watch?v=", "");
+    url = url.replace("www.youtube.com/watch?v=", "");
+    url = url.replace("youtube.com/watch?v=", "");
+    url = url.replace("https://youtu.be/", "");
+    url = url.replace("http://youtu.be/", "");
+    url = url.replace("youtu.be/", "");
+
+    let urlParams = getUrlParams(url);
+
+    let width = "100%";
+    let height = "100%";
+
+    let maxWidth = "500";
+
+    if (urlParams["max-width"]) {
+      maxWidth = urlParams["max-width"];
+    }
+
+    let ratio = "aspect-[16/9]";
+
+    let marginLeft = "auto";
+
+    if (urlParams["margin-left"]) {
+      marginLeft = urlParams["margin-left"];
+    }
+
+    let marginRight = "auto";
+
+    if (urlParams["margin-right"]) {
+      marginRight = urlParams["margin-right"];
+    }
+
+    let youtubeId = url;
+
+    if (youtubeId.indexOf("?") !== -1) {
+      let pos = url.indexOf("?");
+      youtubeId = youtubeId.substring(0, pos);
+    }
+
+    return (
+      '<div style="max-width:' +
+      maxWidth +
+      "px; margin-left:" +
+      marginLeft +
+      "; margin-right:" +
+      marginRight +
+      ';" class="' +
+      ratio +
+      ' relative"><iframe class="absolute top-0 left-0 w-full" width="' +
+      width +
+      '" height="' +
+      height +
+      '" src="https://www.youtube.com/embed/' +
+      youtubeId +
+      '" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>'
+    );
+  }
+
   return { toHTMLRenderers };
 }
 
 function codepenPlugin() {
   const toHTMLRenderers = {
     codepen(node: any) {
-      const url = node.literal;
-      const height = "400";
+      const html = renderCodepen(node.literal);
+
       return [
-        {
-          type: "openTag",
-          tagName: "div",
-          outerNewLine: true,
-        },
-        {
-          type: "html",
-          content: `<iframe height="${height}" style="width: 100%;" src="${url}" allowtransparency="true" allowfullscreen="true"></iframe>`,
-        },
+        { type: "openTag", tagName: "div", outerNewLine: true },
+        { type: "html", content: html },
         { type: "closeTag", tagName: "div", outerNewLine: true },
       ];
     },
   };
+
+  function renderCodepen(url: string) {
+    const urlParams = getUrlParams(url);
+
+    let height = "400";
+
+    if (urlParams.height) {
+      height = urlParams.height;
+    }
+
+    let width = "100%";
+
+    if (urlParams.width) {
+      width = urlParams.width;
+    }
+
+    if (!width.includes("px") && !width.includes("%")) {
+      width += "px";
+    }
+
+    let iframeUri = url;
+
+    if (iframeUri.indexOf("#") !== -1) {
+      let pos = iframeUri.indexOf("#");
+      iframeUri = iframeUri.substring(0, pos);
+    }
+
+    return (
+      '<iframe height="' +
+      height +
+      '" style="width: ' +
+      width +
+      ';" title="" src="' +
+      iframeUri +
+      '" allowtransparency="true" allowfullscreen="true"></iframe>'
+    );
+  }
+
   return { toHTMLRenderers };
 }
 

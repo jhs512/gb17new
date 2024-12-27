@@ -35,6 +35,10 @@ class AppConfig(
         fun isNotProd(): Boolean {
             return true
         }
+
+        fun isFrontUrl(url: String?): Boolean {
+            return url?.startsWith(siteFrontUrl) ?: false
+        }
     }
 
     @PostConstruct

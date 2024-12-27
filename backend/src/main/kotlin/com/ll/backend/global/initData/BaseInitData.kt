@@ -34,16 +34,19 @@ class BaseInitData(
         if (memberService.count() > 0) return
 
         val memberSystem = memberService.join("system", "1234", "시스템")
-        AppConfig.isNotProd().let { memberSystem.refreshToken = "system" }
+        AppConfig.isNotProd().let { memberSystem.refreshToken = "system-apikey" }
 
         val memberAdmin = memberService.join("admin", "1234", "관리자")
-        AppConfig.isNotProd().let { memberAdmin.refreshToken = "admin" }
+        AppConfig.isNotProd().let { memberAdmin.refreshToken = "admin-apikey" }
 
         val memberUser1 = memberService.join("user1", "1234", "유저1")
-        AppConfig.isNotProd().let { memberUser1.refreshToken = "user1" }
+        AppConfig.isNotProd().let { memberUser1.refreshToken = "user1-apikey" }
 
         val memberUser2 = memberService.join("user2", "1234", "유저2")
-        AppConfig.isNotProd().let { memberUser2.refreshToken = "user2" }
+        AppConfig.isNotProd().let { memberUser2.refreshToken = "user2-apikey" }
+
+        val memberUser3 = memberService.join("user3", "1234", "유저3")
+        AppConfig.isNotProd().let { memberUser2.refreshToken = "user3-apikey" }
     }
 
     @Transactional
@@ -52,6 +55,7 @@ class BaseInitData(
 
         val memberUser1 = memberService.findByUsername("user1").getOrThrow()
         val memberUser2 = memberService.findByUsername("user2").getOrThrow()
+        val memberUser3 = memberService.findByUsername("user3").getOrThrow()
 
         postService.write(Author(memberUser1), "안녕하세요.", "반갑습니다.", true)
         postService.write(Author(memberUser2), "Hello.", "Nice to meet you.", true)
@@ -127,5 +131,7 @@ class BaseInitData(
             1. - [ ] [문제 - 배열에 과일이름들을 담아주세요, push 사용](https://codepen.io/jangka44/pen/abEppor?editors=0012)
         """.trimIndent(), true
         )
+
+        postService.write(Author(memberUser3), "Hello.", "Nice to meet you.", false)
     }
 }

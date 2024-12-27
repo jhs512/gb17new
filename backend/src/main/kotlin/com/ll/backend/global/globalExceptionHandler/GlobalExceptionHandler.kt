@@ -12,11 +12,13 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 
 
 @ControllerAdvice
 class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handleException(ex: ServiceException): ResponseEntity<RsData<Empty>> {
         if (AppConfig.isNotProd()) ex.printStackTrace()
 

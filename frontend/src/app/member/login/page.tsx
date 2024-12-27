@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { client } from "@/lib/backend/client";
+import client from "@/lib/backend/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

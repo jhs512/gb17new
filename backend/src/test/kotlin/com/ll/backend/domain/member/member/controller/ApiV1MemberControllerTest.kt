@@ -32,7 +32,7 @@ class ApiV1MemberControllerTest @Autowired constructor(
 ) {
     companion object {
         // 샘플 데이터 생성기를 통해서 만들어진 회원의 수
-        private const val MEMBER_TOTAL_ITEMS = 4
+        private const val MEMBER_TOTAL_ITEMS = 5
     }
 
     private fun bodyToRsData(resultActions: ResultActions): RsData<Map<String, *>> {
@@ -78,7 +78,7 @@ class ApiV1MemberControllerTest @Autowired constructor(
 
 
     @Test
-    @DisplayName("POST /api/v1/members/join conflict")
+    @DisplayName("POST /api/v1/members/join, conflict")
     fun t02() {
         // WHEN
         val resultActions = mockMvc
@@ -123,9 +123,9 @@ class ApiV1MemberControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val memberUser = memberService.findByUsername("user1").getOrThrow()
 
-        // THEN
         resultActions
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$.resultCode").value("201-1"))
@@ -293,11 +293,11 @@ class ApiV1MemberControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val rsData = bodyToRsData(resultActions)
         val accessToken = rsData.data["accessToken"] as String
         val refreshToken = rsData.data["refreshToken"] as String
 
-        // THEN
         resultActions
             .andExpect(status().is2xxSuccessful)
             .andExpect { result ->
@@ -348,9 +348,9 @@ class ApiV1MemberControllerTest @Autowired constructor(
             )
             .andDo(print())
 
+        // THEN
         val memberUser = memberService.findByUsername("user1").getOrThrow()
 
-        // THEN
         resultActions
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.resultCode").value("200-1"))
@@ -369,13 +369,13 @@ class ApiV1MemberControllerTest @Autowired constructor(
         val resultActions = mockMvc
             .perform(
                 get("/api/v1/members/me")
-                    .header("Authorization", "Bearer user1 EMPTY")
+                    .header("Authorization", "Bearer user1-apikey EMPTY")
             )
             .andDo(print())
 
+        // THEN
         val memberUser = memberService.findByUsername("user1").getOrThrow()
 
-        // THEN
         resultActions
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.resultCode").value("200-1"))
@@ -395,15 +395,15 @@ class ApiV1MemberControllerTest @Autowired constructor(
             .perform(
                 get("/api/v1/members/me")
                     .cookie(
-                        Cookie("refreshToken", "user1"),
+                        Cookie("refreshToken", "user1-apikey"),
                         Cookie("accessToken", "EMPTY"),
                     )
             )
             .andDo(print())
 
+        // THEN
         val memberUser = memberService.findByUsername("user1").getOrThrow()
 
-        // THEN
         resultActions
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.resultCode").value("200-1"))
