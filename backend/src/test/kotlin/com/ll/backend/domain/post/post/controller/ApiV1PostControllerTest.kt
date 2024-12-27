@@ -35,6 +35,11 @@ class ApiV1PostControllerTest @Autowired constructor(
     private val postService: PostService,
     private val mockMvc: MockMvc
 ) {
+    companion object {
+        // 샘플 데이터 생성기를 통해서 만들어진 글의 수
+        private const val POST_TOTAL_ITEMS = 4
+    }
+
     @Autowired
     private lateinit var memberService: MemberService
 
@@ -176,7 +181,7 @@ class ApiV1PostControllerTest @Autowired constructor(
         val rsData = bodyToRsData(resultActions)
         val newPostId = rsData.data["id"] as Int
 
-        assertThat(newPostId).isGreaterThan(2)
+        assertThat(newPostId).isGreaterThan(POST_TOTAL_ITEMS)
 
         resultActions
             .andExpect(status().isCreated)
@@ -457,5 +462,41 @@ class ApiV1PostControllerTest @Autowired constructor(
             .andExpect(status().isForbidden)
             .andExpect(jsonPath("$.resultCode").value("403-1"))
             .andExpect(jsonPath("$.msg").value("비공개글은 작성자만 조회할 수 있습니다."))
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/posts/temp")
+    @WithUserDetails("user1")
+    fun t18() {
+        // WHEN
+        val resultActions = mockMvc
+            .perform(
+                post("/api/v1/posts/temp")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        """
+                        {
+                            "title": "",
+                            "content": "내용"
+                        }
+                        """.trimIndent()
+                    )
+            )
+            .andDo(print())
+
+        // THEN
+        val rsData = bodyToRsData(resultActions)
+        val newPostId = rsData.data["id"] as Int
+
+        assertThat(newPostId).isGreaterThan(POST_TOTAL_ITEMS)
+
+        resultActions
+            .andExpect(status().isCreated)
+            .andExpect(jsonPath("$.resultCode").value("201-1"))
+            .andExpect(jsonPath("$.msg").value("${newPostId}번 임시글이 생성되었습니다."))
+            .andExpect(jsonPath("$.data.id").value(newPostId))
+            .andExpect(jsonPath("$.data.title").value("임시글"))
+            .andExpect(jsonPath("$.data.content").doesNotExist())
+            .andExpect(jsonPath("$.data.published").value(false))
     }
 }

@@ -117,4 +117,8 @@ class PostService(
 
         if (actor != post.author) throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
     }
+
+    fun makeTemp(currentActor: Author): Post {
+        return write(currentActor, "임시글", "저장 : Ctrl + S or Cmd + S", false)
+    }
 }

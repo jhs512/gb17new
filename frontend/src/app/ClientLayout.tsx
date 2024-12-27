@@ -5,12 +5,15 @@ import Link from "next/link";
 import client from "@/lib//backend/client";
 import { MemberContext, useLoginMember } from "@/stores/member";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
+
   const {
     setLoginMember,
     isLogin,
@@ -45,9 +48,17 @@ export default function ClientLayout({
     });
   };
 
+  const writePost = () => {
+    client.POST("/api/v1/posts/temp").then(({ data }) => {
+      if (data) {
+        router.push(`/post/${data.data.id}/edit`);
+      }
+    });
+  };
+
   return (
     <>
-      <header className="p-2 flex items-center gap-2">
+      <header className="p-2 flex items-center gap-4">
         <Link href="/">홈</Link>
         <Link href="/post/list">글</Link>
         {isLogin ? (
@@ -61,6 +72,7 @@ export default function ClientLayout({
                 className="rounded-full"
               />
             </Link>
+            <button onClick={writePost}>글 쓰기</button>
             <button onClick={logout}>로그아웃</button>
           </>
         ) : (

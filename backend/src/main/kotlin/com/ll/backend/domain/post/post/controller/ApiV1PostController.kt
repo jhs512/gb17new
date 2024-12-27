@@ -3,6 +3,8 @@ package com.ll.backend.domain.post.post.controller
 import com.ll.backend.domain.post.author.entity.Author
 import com.ll.backend.domain.post.post.dto.PostDto
 import com.ll.backend.domain.post.post.dto.PostWithBodyDto
+import com.ll.backend.domain.post.post.entity.Post
+import com.ll.backend.domain.post.post.repository.PostRepository
 import com.ll.backend.domain.post.post.service.PostService
 import com.ll.backend.global.app.AppConfig
 import com.ll.backend.global.exceptions.ServiceException
@@ -27,7 +29,8 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "ApiV1PostController", description = "글 API 컨트롤러")
 class ApiV1PostController(
     private val rq: Rq,
-    private val postService: PostService
+    private val postService: PostService,
+    private val postRepository: PostRepository
 ) {
     val currentActor
         get() = Author(rq.actor)
@@ -118,6 +121,35 @@ class ApiV1PostController(
             "${post.id}번 글이 작성되었습니다.",
             PostDto(post)
         )
+    }
+
+
+    @PostMapping("/temp")
+    @Transactional
+    @Operation(summary = "임시글 생성")
+    fun makeTemp(): RsData<PostDto> {
+        postService.checkPermissionToWrite(currentActor)
+
+        findTemp(currentActor)
+            ?.let {
+                return RsData(
+                    "200-1",
+                    "${it.id}번 임시글을 불러옵니다.",
+                    PostDto(it)
+                )
+            }
+
+        val post = postService.makeTemp(currentActor)
+
+        return RsData(
+            "201-1",
+            "${post.id}번 임시글이 생성되었습니다.",
+            PostDto(post)
+        )
+    }
+
+    private fun findTemp(author: Author): Post? {
+        return postRepository.findByAuthorAndPublishedAndTitle(author, false, "임시글")
     }
 
 

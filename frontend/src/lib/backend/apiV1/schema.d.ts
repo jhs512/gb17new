@@ -41,6 +41,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts/temp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 임시글 생성 */
+        post: operations["makeTemp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/members/login": {
         parameters: {
             query?: never;
@@ -377,6 +394,35 @@ export interface operations {
                 "application/json": components["schemas"]["PostWriteReqBody"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataPostDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    makeTemp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

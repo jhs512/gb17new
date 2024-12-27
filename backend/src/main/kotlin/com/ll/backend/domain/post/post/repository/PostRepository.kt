@@ -28,4 +28,6 @@ interface PostRepository : JpaRepository<Post, Long> {
         searchKeyword: String,
         pageable: PageRequest
     ): Page<Post>
+
+    fun findByAuthorAndPublishedAndTitle(author: Author, published: Boolean, title: String): Post?
 }
