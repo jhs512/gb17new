@@ -1,5 +1,6 @@
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
+import ClientPage from "./ClientPage";
 
 export default async function PostDetail({
   params,
@@ -20,10 +21,5 @@ export default async function PostDetail({
 
   const post = res.data!!;
 
-  return (
-    <textarea
-      className="flex-1 p-2 border"
-      placeholder="저장은 Ctrl + S"
-    ></textarea>
-  );
+  return <ClientPage post={post} />;
 }
