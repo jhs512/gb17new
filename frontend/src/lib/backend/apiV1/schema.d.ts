@@ -354,6 +354,7 @@ export interface operations {
             query?: {
                 page?: number;
                 pageSize?: number;
+                searchKeywordType?: string;
                 searchKeyword?: string;
             };
             header?: never;
@@ -515,6 +516,7 @@ export interface operations {
             query?: {
                 page?: number;
                 pageSize?: number;
+                searchKeywordType?: string;
                 searchKeyword?: string;
             };
             header?: never;

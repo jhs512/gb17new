@@ -37,8 +37,19 @@ class PostService(
         return postRepository.save(post)
     }
 
+    fun findByAuthorPaged(author: Author, page: Int, pageSize: Int): Page<Post> {
+        val pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
+
+        return postRepository.findByAuthor(
+            author,
+            pageable
+        )
+
+    }
+
     fun findByAuthorAndSearchKeywordPaged(
         author: Author,
+        searchKeywordType: String,
         searchKeyword: String,
         page: Int,
         pageSize: Int
@@ -52,7 +63,15 @@ class PostService(
             )
         }
 
-        return postRepository.findByAuthorAndBody_ContentLike(
+        if (searchKeywordType == "content") {
+            return postRepository.findByAuthorAndBody_ContentLike(
+                author,
+                "%$searchKeyword%",
+                pageable
+            )
+        }
+
+        return postRepository.findByAuthorAndTitleLike(
             author,
             "%$searchKeyword%",
             pageable
@@ -60,16 +79,17 @@ class PostService(
     }
 
     fun findByPublishedPaged(published: Boolean, page: Int, pageSize: Int): Page<Post> {
-        return findByPublishedAndSearchKeywordPaged(
+        val pageable = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")))
+
+        return postRepository.findByPublished(
             published,
-            "",
-            page,
-            pageSize
+            pageable
         )
     }
 
     fun findByPublishedAndSearchKeywordPaged(
         published: Boolean,
+        searchKeywordType: String,
         searchKeyword: String,
         page: Int,
         pageSize: Int
@@ -83,7 +103,15 @@ class PostService(
             )
         }
 
-        return postRepository.findByPublishedAndBody_ContentLike(
+        if (searchKeywordType == "content") {
+            return postRepository.findByPublishedAndBody_ContentLike(
+                published,
+                "%$searchKeyword%",
+                pageable
+            )
+        }
+
+        return postRepository.findByPublishedAndTitleLike(
             published,
             "%$searchKeyword%",
             pageable

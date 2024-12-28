@@ -18,6 +18,15 @@ import { Separator } from "@/components/ui/separator";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function getPageNumbers(currentPage: number, totalPages: number) {
   const delta = 5;
@@ -50,12 +59,32 @@ function getPageNumbers(currentPage: number, totalPages: number) {
   return rangeWithDots;
 }
 
+function makeQueryString(params: {
+  [key: string]: string | number | undefined;
+}) {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      searchParams.set(key, String(value));
+    }
+  });
+  return searchParams.toString();
+}
+
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { page?: string; searchKeyword?: string };
+  searchParams: {
+    page?: string;
+    searchKeyword?: string;
+    searchKeywordType?: "title" | "body";
+  };
 }) {
-  const { page: _page, searchKeyword } = await searchParams;
+  const {
+    page: _page,
+    searchKeyword,
+    searchKeywordType = "title",
+  } = await searchParams;
 
   const page = Number(_page || 1);
 
@@ -64,6 +93,7 @@ export default async function Page({
       query: {
         page,
         searchKeyword,
+        searchKeywordType,
         pageSize: 10,
       },
     },
@@ -84,6 +114,26 @@ export default async function Page({
           </p>
         </div>
 
+        <div className="relative w-full max-w-sm">
+          <form className="flex gap-2">
+            <Select name="searchKeywordType" defaultValue={searchKeywordType}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="검색 유형" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">제목</SelectItem>
+                <SelectItem value="body">내용</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="검색어를 입력하세요"
+              name="searchKeyword"
+              defaultValue={searchKeyword || ""}
+              className="pl-8"
+            />
+          </form>
+        </div>
+
         <Separator />
 
         <div className="grid gap-4">
@@ -92,7 +142,10 @@ export default async function Page({
               <Card className="transition-colors hover:bg-accent">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{post.title}</CardTitle>
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground">#{post.id}</span>
+                      <CardTitle className="text-xl">{post.title}</CardTitle>
+                    </div>
                     <CardDescription>
                       {new Date(post.createDate).toLocaleDateString("ko-KR", {
                         year: "numeric",
@@ -120,7 +173,13 @@ export default async function Page({
             <PaginationContent>
               {page > 1 && (
                 <PaginationItem>
-                  <PaginationPrevious href={`?page=${page - 1}`} />
+                  <PaginationPrevious
+                    href={`?${makeQueryString({
+                      page: page - 1,
+                      searchKeyword,
+                      searchKeywordType,
+                    })}`}
+                  />
                 </PaginationItem>
               )}
 
@@ -130,7 +189,11 @@ export default async function Page({
                     <PaginationEllipsis />
                   ) : (
                     <PaginationLink
-                      href={`?page=${pageNum}`}
+                      href={`?${makeQueryString({
+                        page: pageNum,
+                        searchKeyword,
+                        searchKeywordType,
+                      })}`}
                       isActive={pageNum === page}
                     >
                       {pageNum}
@@ -141,7 +204,13 @@ export default async function Page({
 
               {page < resData.totalPages && (
                 <PaginationItem>
-                  <PaginationNext href={`?page=${page + 1}`} />
+                  <PaginationNext
+                    href={`?${makeQueryString({
+                      page: page + 1,
+                      searchKeyword,
+                      searchKeywordType,
+                    })}`}
+                  />
                 </PaginationItem>
               )}
             </PaginationContent>

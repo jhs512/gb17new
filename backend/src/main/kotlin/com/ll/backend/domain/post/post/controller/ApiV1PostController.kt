@@ -42,12 +42,14 @@ class ApiV1PostController(
     fun getItems(
         page: Int = 1,
         @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        searchKeywordType: String = "",
         searchKeyword: String = ""
     ): PageDto<PostDto> {
         return PageDto(
             postService
                 .findByPublishedAndSearchKeywordPaged(
                     true,
+                    searchKeywordType,
                     searchKeyword,
                     page,
                     pageSize
@@ -63,12 +65,14 @@ class ApiV1PostController(
     fun getMine(
         page: Int = 1,
         @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        searchKeywordType: String = "",
         searchKeyword: String = ""
     ): PageDto<PostDto> {
         return PageDto(
             postService
                 .findByAuthorAndSearchKeywordPaged(
                     currentActor,
+                    searchKeywordType,
                     searchKeyword,
                     page,
                     pageSize

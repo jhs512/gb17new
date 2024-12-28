@@ -18,12 +18,24 @@ interface PostRepository : JpaRepository<Post, Long> {
         pageable: PageRequest
     ): Page<Post>
 
+    fun findByAuthorAndTitleLike(
+        author: Author,
+        searchKeyword: String,
+        pageable: PageRequest
+    ): Page<Post>
+
     fun findByPublished(
         published: Boolean,
         pageable: PageRequest
     ): Page<Post>
 
     fun findByPublishedAndBody_ContentLike(
+        published: Boolean,
+        searchKeyword: String,
+        pageable: PageRequest
+    ): Page<Post>
+
+    fun findByPublishedAndTitleLike(
         published: Boolean,
         searchKeyword: String,
         pageable: PageRequest

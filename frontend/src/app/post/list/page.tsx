@@ -12,18 +12,78 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+function getPageNumbers(currentPage: number, totalPages: number) {
+  const delta = 5;
+  const range: number[] = [];
+  const rangeWithDots: (number | string)[] = [];
+  let l: number;
+
+  range.push(1);
+
+  for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+    if (i < totalPages && i > 1) {
+      range.push(i);
+    }
+  }
+
+  range.push(totalPages);
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push("...");
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+
+  return rangeWithDots;
+}
+
+function makeQueryString(params: {
+  [key: string]: string | number | undefined;
+}) {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      searchParams.set(key, String(value));
+    }
+  });
+  return searchParams.toString();
+}
 
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { page?: string; searchKeyword?: string };
+  searchParams: {
+    page?: string;
+    searchKeyword?: string;
+    searchKeywordType?: "title" | "body";
+  };
 }) {
-  const { page: _page, searchKeyword } = await searchParams;
+  const {
+    page: _page,
+    searchKeyword,
+    searchKeywordType = "title",
+  } = await searchParams;
 
   const page = Number(_page || 1);
 
@@ -32,6 +92,7 @@ export default async function Home({
       query: {
         page,
         searchKeyword,
+        searchKeywordType,
       },
     },
     headers: {
@@ -51,15 +112,38 @@ export default async function Home({
           </p>
         </div>
 
+        <div className="relative w-full max-w-sm">
+          <form className="flex gap-2">
+            <Select name="searchKeywordType" defaultValue={searchKeywordType}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="검색 유형" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">제목</SelectItem>
+                <SelectItem value="body">내용</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="검색어를 입력하세요"
+              name="searchKeyword"
+              defaultValue={searchKeyword || ""}
+              className="pl-8"
+            />
+          </form>
+        </div>
+
         <Separator />
 
         <div className="grid gap-4">
           {resData.items.map((post) => (
             <Link key={post.id} href={`/post/${post.id}`}>
-              <Card key={post.id}>
+              <Card className="transition-colors hover:bg-accent">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{post.title}</CardTitle>
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground">#{post.id}</span>
+                      <CardTitle className="text-xl">{post.title}</CardTitle>
+                    </div>
                     <CardDescription>
                       {new Date(post.createDate).toLocaleDateString("ko-KR", {
                         year: "numeric",
@@ -87,26 +171,44 @@ export default async function Home({
             <PaginationContent>
               {page > 1 && (
                 <PaginationItem>
-                  <PaginationPrevious href={`?page=${page - 1}`} />
+                  <PaginationPrevious
+                    href={`?${makeQueryString({
+                      page: page - 1,
+                      searchKeyword,
+                      searchKeywordType,
+                    })}`}
+                  />
                 </PaginationItem>
               )}
 
-              {Array.from({ length: resData.totalPages }, (_, i) => i + 1).map(
-                (_page) => (
-                  <PaginationItem key={_page}>
+              {getPageNumbers(page, resData.totalPages).map((pageNum, idx) => (
+                <PaginationItem key={idx}>
+                  {pageNum === "..." ? (
+                    <PaginationEllipsis />
+                  ) : (
                     <PaginationLink
-                      href={`?page=${_page}`}
-                      isActive={_page === page}
+                      href={`?${makeQueryString({
+                        page: pageNum,
+                        searchKeyword,
+                        searchKeywordType,
+                      })}`}
+                      isActive={pageNum === page}
                     >
-                      {_page}
+                      {pageNum}
                     </PaginationLink>
-                  </PaginationItem>
-                )
-              )}
+                  )}
+                </PaginationItem>
+              ))}
 
               {page < resData.totalPages && (
                 <PaginationItem>
-                  <PaginationNext href={`?page=${page + 1}`} />
+                  <PaginationNext
+                    href={`?${makeQueryString({
+                      page: page + 1,
+                      searchKeyword,
+                      searchKeywordType,
+                    })}`}
+                  />
                 </PaginationItem>
               )}
             </PaginationContent>

@@ -383,11 +383,10 @@ class ApiV1PostControllerTest @Autowired constructor(
 
         // THEN
         val postPage = postService
-            .findByAuthorAndSearchKeywordPaged(
+            .findByAuthorPaged(
                 Author(
                     memberService.findByUsername("user1").getOrThrow()
                 ),
-                "",
                 1,
                 AppConfig.basePageSize
             )

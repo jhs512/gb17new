@@ -14,6 +14,7 @@ import Link from "next/link";
 import { MemberContext } from "@/stores/member";
 import { use } from "react";
 import { components } from "@/lib/backend/apiV1/schema";
+import { Expand } from "lucide-react";
 
 export default function ClientPage({
   post,
@@ -30,11 +31,19 @@ export default function ClientPage({
             <h1 className="text-3xl font-bold tracking-tight">게시글 상세</h1>
             <p className="text-muted-foreground">게시글의 상세 내용입니다</p>
           </div>
-          {loginMember?.id === post.authorId && (
-            <Link href={`/post/${post.id}/edit`}>
-              <Button>수정</Button>
+          <div className="flex items-center gap-2">
+            <Link href={`/p/${post.id}`}>
+              <Button variant="outline" title="집중 모드">
+                <Expand className="h-4 w-4" />
+                <span>보기모드</span>
+              </Button>
             </Link>
-          )}
+            {loginMember?.id === post.authorId && (
+              <Link href={`/post/${post.id}/edit`}>
+                <Button>수정</Button>
+              </Link>
+            )}
+          </div>
         </div>
 
         <Separator />
