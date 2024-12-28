@@ -1,9 +1,10 @@
 "use client";
 
 import client from "@/lib/backend/client";
-import hotkeys from "hotkeys-js";
 import { useEffect, useRef } from "react";
 import type { components } from "@/lib/backend/apiV1/schema";
+import hotkeys from "hotkeys-js";
+import type * as Monaco from "monaco-editor";
 
 interface Config {
   title: string;
@@ -48,13 +49,43 @@ export default function ClientPage({
 }: {
   post: components["schemas"]["PostWithContentDto"];
 }) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const monacoRef = useRef<Monaco.editor.IStandaloneCodeEditor | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    import("monaco-editor").then((monaco) => {
+      monacoRef.current = monaco.editor.create(editorRef.current!, {
+        value: `$$config
+title: ${post.title}
+published: ${post.published}
+$$
+
+${post.content || ""}`.trim(),
+        language: "markdown",
+        tabSize: 2,
+        mouseWheelZoom: true,
+        theme: "vs-dark",
+        automaticLayout: true,
+        minimap: {
+          enabled: false,
+        },
+      });
+    });
+
+    return () => {
+      monacoRef.current?.dispose();
+    };
+  }, [post]);
 
   const savePost = async () => {
-    if (!textareaRef.current) return;
+    if (!monacoRef.current) return;
 
     try {
-      const { config, content } = parseConfig(textareaRef.current.value);
+      const { config, content } = parseConfig(monacoRef.current.getValue());
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
@@ -72,11 +103,13 @@ export default function ClientPage({
       if (!res.response.ok) {
         throw new Error("저장에 실패했습니다");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
-    hotkeys.filter = function (event) {
+    hotkeys.filter = function () {
       return true;
     };
 
@@ -92,19 +125,5 @@ export default function ClientPage({
     };
   }, []);
 
-  const defaultValue = `$$config
-title: ${post.title}
-published: ${post.published}
-$$
-
-${post.content || ""}`.trim();
-
-  return (
-    <textarea
-      ref={textareaRef}
-      className="flex-1 p-2 border font-mono"
-      placeholder="저장은 Ctrl + S"
-      defaultValue={defaultValue}
-    ></textarea>
-  );
+  return <div ref={editorRef} className="flex-1" />;
 }

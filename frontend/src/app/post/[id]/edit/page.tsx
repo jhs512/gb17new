@@ -19,6 +19,10 @@ export default async function PostDetail({
     },
   });
 
+  if (res.error) {
+    return <div>{res.error.msg}</div>;
+  }
+
   const post = res.data!!;
 
   return <ClientPage post={post} />;
