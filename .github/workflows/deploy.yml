@@ -64,3 +64,19 @@ jobs:
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/slog:${{ needs.makeTagAndRelease.outputs.tag_name }},
             ghcr.io/${{ env.OWNER_LC }}/slog:latest
+  deploy:
+    name: 쿠버네티스 배포
+    needs: [makeTagAndRelease, buildImageAndPush]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
+        env:
+          OWNER: "${{ github.repository_owner }}"
+      - run: |
+          kubectl set image deployment/slog-1-deployment slog-1=ghcr.io/${{ env.OWNER_LC }}/slog:${{ needs.makeTagAndRelease.outputs.tag_name }}
