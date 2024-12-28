@@ -1,6 +1,6 @@
 "use client";
 
-import { Viewer } from "@/components/viewer";
+import MarkdownViewer from "@/components/MarkdownViewer";
 import { components } from "@/lib/backend/apiV1/schema";
 
 export default function ClientPage({
@@ -11,7 +11,7 @@ export default function ClientPage({
   return (
     <div className="p-2">
       <h1 className="text-2xl font-bold">{post.title}</h1>
-      <Viewer initialValue={post.content} />
+      <MarkdownViewer initialValue={post.content} />
     </div>
   );
 }

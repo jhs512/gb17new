@@ -185,6 +185,19 @@ function hidePlugin() {
   return { toHTMLRenderers };
 }
 
+function pptPlugin() {
+  const toHTMLRenderers = {
+    config(node: any) {
+      return [
+        { type: "openTag", tagName: "div", outerNewLine: true },
+        { type: "html", content: "" },
+        { type: "closeTag", tagName: "div", outerNewLine: true },
+      ];
+    },
+  };
+  return { toHTMLRenderers };
+}
+
 function configPlugin() {
   const toHTMLRenderers = {
     config(node: any) {
@@ -198,7 +211,7 @@ function configPlugin() {
   return { toHTMLRenderers };
 }
 
-const ViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
+const MarkdownViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
   return (
     <Viewer
       initialValue={initialValue}
@@ -225,6 +238,7 @@ const ViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
         codepenPlugin,
         hidePlugin,
         configPlugin,
+        pptPlugin,
       ]}
       linkAttributes={{ target: "_blank" }}
       customHTMLRenderer={{
@@ -266,4 +280,4 @@ const ViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
   );
 };
 
-export default ViewerWrapper;
+export default MarkdownViewerWrapper;

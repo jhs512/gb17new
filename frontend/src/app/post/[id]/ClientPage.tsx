@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Viewer } from "@/components/viewer";
+import MarkdownViewer from "@/components/MarkdownViewer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { MemberContext } from "@/stores/member";
@@ -62,7 +62,7 @@ export default function ClientPage({
               </div>
               {post.content && (
                 <div className="prose prose-neutral dark:prose-invert max-w-none">
-                  <Viewer initialValue={post.content} />
+                  <MarkdownViewer initialValue={post.content} />
                 </div>
               )}
             </div>
