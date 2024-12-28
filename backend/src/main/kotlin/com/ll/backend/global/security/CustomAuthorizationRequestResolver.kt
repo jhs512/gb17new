@@ -35,16 +35,10 @@ class CustomAuthorizationRequestResolver(
         // state 파라미터를 요청에서 가져옴
         val customState = request.getParameter("state")
 
-        // 기존 요청의 추가 파라미터에 state 값 추가
-        val additionalParameters = authorizationRequest.additionalParameters.toMutableMap()
-        if (!customState.isNullOrEmpty()) {
-            additionalParameters["state"] = customState
-        }
-
         // 새로운 OAuth2AuthorizationRequest 생성
         return OAuth2AuthorizationRequest.from(authorizationRequest)
-            .additionalParameters(additionalParameters)
             .state(customState) // state 값 설정
+            .attributes { it } // 기존 attributes 유지
             .build()
     }
 }
