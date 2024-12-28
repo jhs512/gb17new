@@ -16,6 +16,6 @@ class HomeController {
         // getHostName 메소드를 호출하여 호스트 이름을 얻습니다.
         val hostname = localHost.hostName
 
-        return "hostname: $hostname"
+        return "hostname = $hostname"
     }
 }
