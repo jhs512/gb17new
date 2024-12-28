@@ -1,5 +1,5 @@
 # 첫 번째 스테이지: 빌드 스테이지
-FROM gradle:gradle:jdk-21-and-23-graal-jammy AS builder
+FROM gradle:jdk-21-and-23-graal-jammy AS builder
 
 # 작업 디렉토리 설정
 WORKDIR /app
