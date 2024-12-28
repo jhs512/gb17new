@@ -12,6 +12,6 @@ class PostBody(
     @ManyToOne(fetch = LAZY)
     var post: Post,
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     var content: String
 ) : BaseEntity()
