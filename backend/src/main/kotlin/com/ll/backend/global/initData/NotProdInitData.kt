@@ -10,16 +10,18 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
+import org.springframework.context.annotation.Profile
 import org.springframework.transaction.annotation.Transactional
 
 @Configuration
-class BaseInitData(
+@Profile("!prod")
+class NotProdInitData(
     private val postService: PostService,
     private val memberService: MemberService
 ) {
     @Autowired
     @Lazy
-    private lateinit var self: BaseInitData
+    private lateinit var self: NotProdInitData
 
     @Bean
     fun initDataBaseApplicationRunner(): ApplicationRunner {
