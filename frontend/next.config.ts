@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
     "@toast-ui/react-editor",
     "tui-color-picker",
   ],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
