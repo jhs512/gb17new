@@ -12,11 +12,43 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
 import Link from "next/link";
+
+function getPageNumbers(currentPage: number, totalPages: number) {
+  const delta = 5;
+  const range: number[] = [];
+  const rangeWithDots: (number | string)[] = [];
+  let l: number;
+
+  range.push(1);
+
+  for (let i = currentPage - delta; i <= currentPage + delta; i++) {
+    if (i < totalPages && i > 1) {
+      range.push(i);
+    }
+  }
+
+  range.push(totalPages);
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push("...");
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+
+  return rangeWithDots;
+}
 
 export default async function Page({
   searchParams,
@@ -92,18 +124,20 @@ export default async function Page({
                 </PaginationItem>
               )}
 
-              {Array.from({ length: resData.totalPages }, (_, i) => i + 1).map(
-                (_page) => (
-                  <PaginationItem key={_page}>
+              {getPageNumbers(page, resData.totalPages).map((pageNum, idx) => (
+                <PaginationItem key={idx}>
+                  {pageNum === "..." ? (
+                    <PaginationEllipsis />
+                  ) : (
                     <PaginationLink
-                      href={`?page=${_page}`}
-                      isActive={_page === page}
+                      href={`?page=${pageNum}`}
+                      isActive={pageNum === page}
                     >
-                      {_page}
+                      {pageNum}
                     </PaginationLink>
-                  </PaginationItem>
-                )
-              )}
+                  )}
+                </PaginationItem>
+              ))}
 
               {page < resData.totalPages && (
                 <PaginationItem>
