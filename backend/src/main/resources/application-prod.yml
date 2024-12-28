@@ -5,7 +5,7 @@ spring:
     timeout-per-shutdown-phase: 5m
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-1-service:3306/slog_prod?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8mb4
+    url: jdbc:mysql://mysql-1-service:3306/slog_prod?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: lldjlocal
     password: 1234
   jpa:
