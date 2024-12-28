@@ -54,11 +54,11 @@ jobs:
         env:
           ACTIONS_STEP_DEBUG: true
           APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
-        run: echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
+        run: echo "$APPLICATION_SECRET" > backend/src/main/resources/application-secret.yml
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: backend
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/slog:${{ needs.makeTagAndRelease.outputs.tag_name }},
