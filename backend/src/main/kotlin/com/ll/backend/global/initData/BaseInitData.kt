@@ -46,7 +46,14 @@ class BaseInitData(
         AppConfig.isNotProd().let { memberUser2.refreshToken = "user2-apikey" }
 
         val memberUser3 = memberService.join("user3", "1234", "유저3")
-        AppConfig.isNotProd().let { memberUser2.refreshToken = "user3-apikey" }
+        AppConfig.isNotProd().let { memberUser3.refreshToken = "user3-apikey" }
+
+        val memberDeveloper = memberService.join("KAKAO__3844789364", "", "장희성")
+        AppConfig.isNotProd().let {
+            memberDeveloper.refreshToken = "developer-apikey"
+            memberDeveloper.profileImgUrl =
+                "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg"
+        }
     }
 
     @Transactional

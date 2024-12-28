@@ -166,7 +166,7 @@ export interface components {
             /** Format: date-time */
             modifyDate: string;
             /** Format: int64 */
-            actorId: number;
+            authorId: number;
             authorName: string;
             title: string;
             published: boolean;
@@ -229,7 +229,7 @@ export interface components {
             /** Format: int32 */
             pageSize: number;
         };
-        PostWithBodyDto: {
+        PostWithContentDto: {
             /** Format: int64 */
             id: number;
             /** Format: date-time */
@@ -237,7 +237,7 @@ export interface components {
             /** Format: date-time */
             modifyDate: string;
             /** Format: int64 */
-            actorId: number;
+            authorId: number;
             authorName: string;
             title: string;
             content: string;
@@ -269,7 +269,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PostWithBodyDto"];
+                    "application/json": components["schemas"]["PostWithContentDto"];
                 };
             };
             /** @description Bad Request */

@@ -1,21 +1,21 @@
 package com.ll.backend.global.jpa.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType.IDENTITY
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import org.hibernate.Hibernate
-import org.springframework.data.domain.Persistable
 
 @MappedSuperclass
-abstract class BaseEntity : Persistable<Long> {
+abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    var id: Long = 0
+    @Column(name = "id")
+    var _id: Long = 0
 
-    override fun getId(): Long = id
-
-    override fun isNew(): Boolean = id == 0L
+    val id: Long
+        get() = _id
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -23,7 +23,7 @@ abstract class BaseEntity : Persistable<Long> {
 
         other as BaseEntity
 
-        return id == other.getId()
+        return id == other.id
     }
 
     override fun hashCode(): Int {

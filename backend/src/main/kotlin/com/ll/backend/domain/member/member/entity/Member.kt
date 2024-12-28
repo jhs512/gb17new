@@ -29,17 +29,20 @@ class Member(
         modifyDate: LocalDateTime,
         username: String,
     ) : this(username, "", "", "") {
-        this.id = id
+        this._id = id
         this.createDate = createDate
         this.modifyDate = modifyDate
     }
+
+    val isAdmin
+        get() = username == "admin"
 
     val name
         get() = nickname
 
     val authorities: Collection<GrantedAuthority>
         get() {
-            if (username == "admin") {
+            if (isAdmin) {
                 return listOf(GrantedAuthority { "ROLE_ADMIN" })
             }
 

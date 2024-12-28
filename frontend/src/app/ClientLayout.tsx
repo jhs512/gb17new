@@ -5,13 +5,14 @@ import Link from "next/link";
 import client from "@/lib//backend/client";
 import { MemberContext, useLoginMember } from "@/stores/member";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
   const router = useRouter();
 
   const {
@@ -59,6 +60,9 @@ export default function ClientLayout({
   return (
     <>
       <header className="p-2 flex items-center gap-4">
+        {pathname !== "/" && (
+          <button onClick={() => router.back()}>뒤로가기</button>
+        )}
         <Link href="/">홈</Link>
         <Link href="/post/list">글</Link>
         {isLogin ? (

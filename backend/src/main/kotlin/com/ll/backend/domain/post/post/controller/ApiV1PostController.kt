@@ -2,7 +2,7 @@ package com.ll.backend.domain.post.post.controller
 
 import com.ll.backend.domain.post.author.entity.Author
 import com.ll.backend.domain.post.post.dto.PostDto
-import com.ll.backend.domain.post.post.dto.PostWithBodyDto
+import com.ll.backend.domain.post.post.dto.PostWithContentDto
 import com.ll.backend.domain.post.post.entity.Post
 import com.ll.backend.domain.post.post.repository.PostRepository
 import com.ll.backend.domain.post.post.service.PostService
@@ -83,18 +83,17 @@ class ApiV1PostController(
     @Operation(summary = "단건조회")
     fun getItem(
         @PathVariable id: Long
-    ): PostWithBodyDto {
+    ): PostWithContentDto {
         val post = postService.findById(id)
             .getOrThrow()
 
-        if (!post.published && !rq.isLogin) {
-            throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
+        if (!post.published) {
+            if (!rq.isLogin) throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
+
+            postService.checkPermissionToRead(currentActor, post)
         }
 
-        if (!post.published)
-            postService.checkPermissionToRead(currentActor, post)
-
-        return PostWithBodyDto(post)
+        return PostWithContentDto(post)
     }
 
 

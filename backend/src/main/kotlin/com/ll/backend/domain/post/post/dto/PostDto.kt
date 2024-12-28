@@ -7,7 +7,7 @@ data class PostDto(
     val id: Long,
     val createDate: LocalDateTime,
     val modifyDate: LocalDateTime,
-    val actorId: Long,
+    val authorId: Long,
     val authorName: String,
     val title: String,
     val published: Boolean
@@ -16,7 +16,7 @@ data class PostDto(
         id = post.id,
         createDate = post.createDate,
         modifyDate = post.modifyDate,
-        actorId = post.author.id,
+        authorId = post.author.id,
         authorName = post.author.name,
         title = post.title,
         published = post.published

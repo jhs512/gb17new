@@ -15,6 +15,23 @@ class Post(
 
     var published: Boolean = false
 ) : BaseTime() {
+    constructor(author: Author, title: String, body: String, published: Boolean = false) : this(
+        author,
+        title,
+        published
+    ) {
+        this.body = PostBody(this, body)
+    }
+
+    @OneToOne(fetch = LAZY, cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
+    lateinit var body: PostBody
+
+    var content: String
+        get() = body.content
+        set(value) {
+            body.content = value
+        }
+
     fun modify(title: String, body: String, published: Boolean) {
         this.title = title
         this.published = published
@@ -23,14 +40,4 @@ class Post(
             this.content = body
         }
     }
-
-    @OneToOne(fetch = LAZY, mappedBy = "post", cascade = [CascadeType.PERSIST, CascadeType.REMOVE])
-    @PrimaryKeyJoinColumn
-    lateinit var body: PostBody
-
-    var content: String
-        get() = body.content
-        set(value) {
-            body.content = value
-        }
 }

@@ -101,6 +101,8 @@ class PostService(
     }
 
     fun checkPermissionToDelete(actor: Author, post: Post) {
+        if (actor.isAdmin) return
+
         if (actor != post.author) throw ServiceException("403-1", "글의 작성자만 삭제할 수 있습니다.")
     }
 
@@ -114,6 +116,8 @@ class PostService(
 
     fun checkPermissionToRead(actor: Author, post: Post) {
         if (post.published) return
+
+        if (actor.isAdmin) return
 
         if (actor != post.author) throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
     }

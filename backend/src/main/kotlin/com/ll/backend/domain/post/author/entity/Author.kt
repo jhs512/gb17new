@@ -5,6 +5,7 @@ import com.ll.backend.global.jpa.entity.BaseTime
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import jakarta.persistence.Transient
 import org.hibernate.annotations.Immutable
 
 @Entity
@@ -12,10 +13,12 @@ import org.hibernate.annotations.Immutable
 @Table(name = "member")
 class Author(
     @Column(name = "nickname")
-    var name: String
+    var name: String,
+    @Transient
+    val isAdmin: Boolean
 ) : BaseTime() {
-    constructor(member: Member) : this(member.nickname) {
-        this.id = member.id
+    constructor(member: Member) : this(member.nickname, member.isAdmin) {
+        this._id = member.id
         this.createDate = member.createDate
         this.modifyDate = member.modifyDate
     }

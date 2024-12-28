@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import client from "@/lib/backend/client";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 export default async function Home({
   searchParams,
@@ -27,10 +28,11 @@ export default async function Home({
   const page = Number(_page || 1);
 
   const res = await client.GET("/api/v1/posts", {
-    query: {
-      page,
-      searchKeyword,
-      size: 10,
+    params: {
+      query: {
+        page,
+        searchKeyword,
+      },
     },
     headers: {
       cookie: (await cookies()).toString(),
@@ -53,28 +55,30 @@ export default async function Home({
 
         <div className="grid gap-4">
           {resData.items.map((post) => (
-            <Card key={post.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">{post.title}</CardTitle>
-                  <CardDescription>
-                    {new Date(post.createDate).toLocaleDateString("ko-KR", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>작성자: {post.authorName}</span>
-                  {!post.published && (
-                    <span className="text-destructive">(비공개)</span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <Link key={post.id} href={`/post/${post.id}`}>
+              <Card key={post.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">{post.title}</CardTitle>
+                    <CardDescription>
+                      {new Date(post.createDate).toLocaleDateString("ko-KR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span>작성자: {post.authorName}</span>
+                    {!post.published && (
+                      <span className="text-destructive">(비공개)</span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
