@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ClientLayout from "./ClientLayout";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 import localFont from "next/font/local";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.variable}`}>
       <body className={`${pretendard.className} flex flex-col min-h-screen`}>
         <ClientLayout>{children}</ClientLayout>
+        <Toaster />
       </body>
     </html>
   );

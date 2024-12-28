@@ -10,6 +10,7 @@ export default function ClientPage({
 }) {
   return (
     <div className="p-2">
+      <h1 className="text-2xl font-bold">{post.title}</h1>
       <Viewer initialValue={post.content} />
     </div>
   );

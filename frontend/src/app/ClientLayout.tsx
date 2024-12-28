@@ -6,6 +6,7 @@ import client from "@/lib//backend/client";
 import { MemberContext, useLoginMember } from "@/stores/member";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ClientLayout({
   children,
@@ -14,6 +15,7 @@ export default function ClientLayout({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
 
   const {
     setLoginMember,
@@ -52,6 +54,10 @@ export default function ClientLayout({
   const writePost = () => {
     client.POST("/api/v1/posts/temp").then(({ data }) => {
       if (data) {
+        toast({
+          title: "성공",
+          description: data.msg,
+        });
         router.push(`/post/${data.data.id}/edit`);
       }
     });

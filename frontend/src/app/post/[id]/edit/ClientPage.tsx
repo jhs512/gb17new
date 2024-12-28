@@ -1,10 +1,10 @@
 "use client";
 
-import client from "@/lib/backend/client";
-import { useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import type { components } from "@/lib/backend/apiV1/schema";
+import client from "@/lib/backend/client";
 import hotkeys from "hotkeys-js";
-import type * as Monaco from "monaco-editor";
+import { useEffect, useRef } from "react";
 
 interface Config {
   title: string;
@@ -49,43 +49,14 @@ export default function ClientPage({
 }: {
   post: components["schemas"]["PostWithContentDto"];
 }) {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const monacoRef = useRef<Monaco.editor.IStandaloneCodeEditor | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-    if (!editorRef.current) return;
-
-    import("monaco-editor").then((monaco) => {
-      monacoRef.current = monaco.editor.create(editorRef.current!, {
-        value: `$$config
-title: ${post.title}
-published: ${post.published}
-$$
-
-${post.content || ""}`.trim(),
-        language: "markdown",
-        tabSize: 2,
-        mouseWheelZoom: true,
-        theme: "vs-dark",
-        automaticLayout: true,
-        minimap: {
-          enabled: false,
-        },
-      });
-    });
-
-    return () => {
-      monacoRef.current?.dispose();
-    };
-  }, [post]);
+  const { toast } = useToast();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const savePost = async () => {
-    if (!monacoRef.current) return;
+    if (!textareaRef.current) return;
 
     try {
-      const { config, content } = parseConfig(monacoRef.current.getValue());
+      const { config, content } = parseConfig(textareaRef.current.value);
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
@@ -101,10 +72,21 @@ ${post.content || ""}`.trim(),
       });
 
       if (!res.response.ok) {
-        throw new Error("저장에 실패했습니다");
+        toast({
+          title: "저장 실패",
+          description: res.error?.msg,
+        });
+      } else {
+        toast({
+          title: "저장 완료",
+          description: "저장이 완료되었습니다",
+        });
       }
     } catch (error) {
-      console.error(error);
+      toast({
+        title: "저장 실패",
+        description: "저장에 실패했습니다",
+      });
     }
   };
 
@@ -125,5 +107,19 @@ ${post.content || ""}`.trim(),
     };
   }, []);
 
-  return <div ref={editorRef} className="flex-1" />;
+  const defaultValue = `$$config
+title: ${post.title}
+published: ${post.published}
+$$
+
+${post.content || ""}`.trim();
+
+  return (
+    <textarea
+      ref={textareaRef}
+      className="flex-1 p-2 border font-mono"
+      placeholder="저장은 Ctrl + S"
+      defaultValue={defaultValue}
+    />
+  );
 }
