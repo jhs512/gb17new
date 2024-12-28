@@ -187,7 +187,7 @@ function hidePlugin() {
 
 function pptPlugin() {
   const toHTMLRenderers = {
-    config(node: any) {
+    ppt(node: any) {
       return [
         { type: "openTag", tagName: "div", outerNewLine: true },
         { type: "html", content: "" },
