@@ -5,6 +5,8 @@ import type { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
 import hotkeys from "hotkeys-js";
 import { useEffect, useRef } from "react";
+import * as monaco from "monaco-editor";
+import { useTheme } from "next-themes";
 
 interface Config {
   title: string;
@@ -50,13 +52,15 @@ export default function ClientPage({
   post: components["schemas"]["PostWithContentDto"];
 }) {
   const { toast } = useToast();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoEl = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   const savePost = async () => {
-    if (!textareaRef.current) return;
+    if (!editorRef.current) return;
 
     try {
-      const { config, content } = parseConfig(textareaRef.current.value);
+      const { config, content } = parseConfig(editorRef.current.getValue());
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
@@ -91,6 +95,32 @@ export default function ClientPage({
   };
 
   useEffect(() => {
+    if (monacoEl.current) {
+      editorRef.current = monaco.editor.create(monacoEl.current, {
+        value: `$$config
+title: ${post.title}
+published: ${post.published}
+$$
+
+${post.content || ""}`.trim(),
+        language: "markdown",
+        theme: "vs-dark",
+        tabSize: 2,
+        mouseWheelZoom: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
+        fontSize: 14,
+        wordWrap: "on",
+        lineNumbers: "on",
+      });
+
+      return () => {
+        editorRef.current?.dispose();
+      };
+    }
+  }, [post.content, post.title, post.published, theme]);
+
+  useEffect(() => {
     hotkeys.filter = function () {
       return true;
     };
@@ -107,19 +137,9 @@ export default function ClientPage({
     };
   }, []);
 
-  const defaultValue = `$$config
-title: ${post.title}
-published: ${post.published}
-$$
-
-${post.content || ""}`.trim();
-
   return (
-    <textarea
-      ref={textareaRef}
-      className="flex-1 p-2 border font-mono"
-      placeholder="저장은 Ctrl + S"
-      defaultValue={defaultValue}
-    />
+    <div className="flex-1 flex flex-col">
+      <div ref={monacoEl} className="flex-1" />
+    </div>
   );
 }
