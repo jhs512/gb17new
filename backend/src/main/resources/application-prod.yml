@@ -1,8 +1,13 @@
 server:
   shutdown: graceful
 spring:
+  autoconfigure:
+    exclude:
   lifecycle:
     timeout-per-shutdown-phase: 5m
+  data:
+    redis:
+      host: redis-1-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql-1-service:3306/slog_prod?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
