@@ -83,7 +83,7 @@ export default function ClientPage({
       } else {
         toast({
           title: "저장 완료",
-          description: "저장이 완료되었습니다",
+          description: res.data?.msg,
         });
       }
     } catch (error) {
