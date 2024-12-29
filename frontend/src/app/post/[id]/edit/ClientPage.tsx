@@ -60,7 +60,9 @@ export default function ClientPage({
     if (!editorRef.current) return;
 
     try {
-      const { config, content } = parseConfig(editorRef.current.getValue());
+      const { config, content } = parseConfig(
+        editorRef.current.getValue().trim()
+      );
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
