@@ -37,7 +37,6 @@ class DevInitData(
 
         val cmd1Sb = StringBuilder()
         cmd1Sb.append("rm -f apiV1.json")
-
         Ut.cmd.runAsync(cmd1Sb.toString())
 
         val downloadFilePath: String = Ut.file.downloadFileByHttp("$backUrl/v3/api-docs/apiV1", ".")
