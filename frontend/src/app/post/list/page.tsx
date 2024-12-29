@@ -70,7 +70,7 @@ function makeQueryString(params: {
   return searchParams.toString();
 }
 
-export default async function Home({
+export default async function Page({
   searchParams,
 }: {
   searchParams: {
@@ -120,7 +120,7 @@ export default async function Home({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="title">제목</SelectItem>
-                <SelectItem value="body">내용</SelectItem>
+                <SelectItem value="content">내용</SelectItem>
               </SelectContent>
             </Select>
             <Input
