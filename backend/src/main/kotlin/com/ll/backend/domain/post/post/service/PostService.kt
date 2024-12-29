@@ -122,7 +122,11 @@ class PostService(
         postRepository.delete(post)
     }
 
-    fun modify(post: Post, title: String, content: String, published: Boolean): Post {
+    fun modify(post: Post, _title: String?, _content: String?, _published: Boolean?): Post {
+        val title = _title ?: post.title
+        val content = _content ?: post.body.content
+        val published = _published ?: post.published
+
         post.modify(title, content, published)
 
         return post

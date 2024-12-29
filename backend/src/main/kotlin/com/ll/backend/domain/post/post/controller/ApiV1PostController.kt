@@ -173,11 +173,9 @@ class ApiV1PostController(
 
 
     data class PostModifyReqBody(
-        @field:NotBlank
-        val title: String,
-        @field:NotBlank
-        val content: String,
-        val published: Boolean = false
+        val title: String?,
+        val content: String?,
+        val published: Boolean?
     )
 
     @PutMapping("/{id}")
@@ -185,7 +183,7 @@ class ApiV1PostController(
     @Operation(summary = "글 수정")
     fun modify(
         @PathVariable id: Long,
-        @RequestBody @Valid reqBody: PostModifyReqBody
+        @RequestBody reqBody: PostModifyReqBody
     ): RsData<PostDto> {
         val post = postService.findById(id).getOrThrow()
 

@@ -154,9 +154,9 @@ export interface components {
             data: components["schemas"]["Empty"];
         };
         PostModifyReqBody: {
-            title: string;
-            content: string;
-            published: boolean;
+            title?: string;
+            content?: string;
+            published?: boolean;
         };
         PostDto: {
             /** Format: int64 */
