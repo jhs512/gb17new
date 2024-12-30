@@ -1,13 +1,17 @@
 server:
   shutdown: graceful
 spring:
+  cache:
+    type: redis
   autoconfigure:
     exclude:
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
   lifecycle:
     timeout-per-shutdown-phase: 5m
   data:
     redis:
       host: redis-1-service
+      port: 6379
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql-1-service:3306/slog_prod?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true

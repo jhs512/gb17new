@@ -3,8 +3,8 @@ server:
 spring:
   autoconfigure:
     exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
   profiles:
     active: dev
     include: secret
@@ -40,7 +40,7 @@ spring:
             scope: profile_nickname, profile_image
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: '${custom.site.backUrl}/{action}/oauth2/code/{registrationId}'
+            redirect-uri: "${custom.site.backUrl}/{action}/oauth2/code/{registrationId}"
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
@@ -57,6 +57,14 @@ logging:
     org.springframework.web.cors: DEBUG
 springdoc:
   default-produces-media-type: application/json
+management:
+  endpoint:
+    caches:
+      access: read_only
+  endpoints:
+    web:
+      exposure:
+        include: caches, health, info, metrics
 custom:
   dev:
     cookieDomain: localhost
@@ -74,8 +82,13 @@ custom:
   jwt:
     secretKey: ON_SECRET
   accessToken:
-    expirationSec: '#{60*60}'
+    expirationSec: "#{60*60}"
   temp:
     dirPath: c:/temp/gb17_dev/temp
   genFile:
     dirPath: c:/temp/gb17_dev
+  cache:
+    short-lived:
+      ttl: 300
+    long-lived:
+      ttl: 3600

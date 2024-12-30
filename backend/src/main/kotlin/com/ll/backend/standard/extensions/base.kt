@@ -25,7 +25,9 @@ inline fun <T> handleExceptions(block: () -> T): T {
     } catch (e: NoSuchElementException) {
         throw e
     } catch (e: NullPointerException) {
-        throw ServiceException("500-1", "API 규격 변경으로인해서 파싱 오류가 발생했습니다.")
+        throw ServiceException("500-1", "NullPointerException")
+    } catch (e: ArrayIndexOutOfBoundsException) {
+        throw ServiceException("500-3", "ArrayIndexOutOfBoundsException")
     } catch (e: HttpClientErrorException) {
         throw ServiceException("${e.statusCode.value()}-1", e.message ?: "요청 처리 중 오류가 발생했습니다.")
     } catch (e: Exception) {
