@@ -92,22 +92,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/youtube/query/playlists/{playlistCode}/entries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getItems_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/youtube/query/playlists/{code}": {
         parameters: {
             query?: never;
@@ -124,6 +108,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/youtube/query/playlists/{code}/clearCache": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["clearCache"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/youtube/command/playlists/{playlistCode}/entries": {
         parameters: {
             query?: never;
@@ -131,7 +131,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getItems_2"];
+        get: operations["getItems_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -282,12 +282,6 @@ export interface components {
             msg: string;
             data: components["schemas"]["MemberDto"];
         };
-        YoutubePlaylistEntryDto: {
-            code: string;
-            title: string;
-            /** Format: int32 */
-            position: number;
-        };
         YoutubePlaylistDto: {
             code: string;
             channelCode: string;
@@ -295,6 +289,12 @@ export interface components {
             publishDate: string;
             title: string;
             description: string;
+        };
+        YoutubePlaylistEntryDto: {
+            code: string;
+            title: string;
+            /** Format: int32 */
+            position: number;
         };
         PageDtoPostDto: {
             items: components["schemas"]["PostDto"][];
@@ -589,37 +589,6 @@ export interface operations {
             };
         };
     };
-    getItems_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                playlistCode: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["YoutubePlaylistEntryDto"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RsDataEmpty"];
-                };
-            };
-        };
-    };
     getItem_1: {
         parameters: {
             query?: never;
@@ -651,7 +620,38 @@ export interface operations {
             };
         };
     };
-    getItems_2: {
+    clearCache: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RsDataEmpty"];
+                };
+            };
+        };
+    };
+    getItems_1: {
         parameters: {
             query?: never;
             header?: never;

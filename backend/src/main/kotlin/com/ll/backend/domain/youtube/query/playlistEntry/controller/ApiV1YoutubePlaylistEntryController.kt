@@ -5,6 +5,7 @@ import com.ll.backend.domain.youtube.query.playlistEntry.service.YoutubeApiPlayl
 import com.ll.backend.standard.extensions.getOrThrow
 import com.ll.backend.standard.extensions.handleExceptions
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,5 +26,13 @@ class ApiV1YoutubePlaylistEntryController(
             .getOrThrow()
 
         return playlistEntryDtos
+    }
+
+    @GetMapping("/clearCache")
+    fun clearCache(
+        @PathVariable playlistCode: String
+    ): ResponseEntity<String> = handleExceptions {
+        fqYoutubeApiPlaylistEntryService.clearCache(playlistCode)
+        return ResponseEntity.ok("Cache cleared")
     }
 }

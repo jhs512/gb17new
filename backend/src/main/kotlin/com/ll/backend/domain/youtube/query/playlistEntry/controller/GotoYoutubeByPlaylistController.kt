@@ -31,7 +31,7 @@ class GotoYoutubeByPlaylistController(
         // ResponseEntity 생성
         return ResponseEntity.status(HttpStatus.FOUND) // 302 상태 코드
             .header(HttpHeaders.LOCATION, url) // 리다이렉션 URL 설정
-            .header(HttpHeaders.CACHE_CONTROL, "max-age=300") // 5분 동안 캐시
+            .header(HttpHeaders.CACHE_CONTROL, "max-age=120") // 2분 동안 캐시
             .build()
     }
 }
