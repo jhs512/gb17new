@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { forwardRef } from "react";
 
 const MarkdownViewerWrapper = dynamic(() => import("./MarkdownViewerWrapper"), {
   ssr: false,
@@ -11,6 +12,10 @@ interface ViewerProps {
   initialValue: string;
 }
 
-export default function MarkdownViewer({ initialValue }: ViewerProps) {
-  return <MarkdownViewerWrapper initialValue={initialValue} />;
-}
+const MarkdownViewer = forwardRef<any, ViewerProps>((props, ref) => {
+  return <MarkdownViewerWrapper ref={ref} {...props} />;
+});
+
+MarkdownViewer.displayName = "MarkdownViewer";
+
+export default MarkdownViewer;

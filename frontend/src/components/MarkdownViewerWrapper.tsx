@@ -14,6 +14,7 @@ import chart from "@toast-ui/editor-plugin-chart";
 import codeSyntaxHighlight from "@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all";
 import tableMergedCell from "@toast-ui/editor-plugin-table-merged-cell";
 import uml from "@toast-ui/editor-plugin-uml";
+import { forwardRef } from "react";
 
 interface ViewerWrapperProps {
   initialValue: string;
@@ -211,73 +212,78 @@ function configPlugin() {
   return { toHTMLRenderers };
 }
 
-const MarkdownViewerWrapper = ({ initialValue }: ViewerWrapperProps) => {
-  return (
-    <Viewer
-      initialValue={initialValue}
-      language="ko-KR"
-      plugins={[
-        [
-          chart,
-          {
-            minWidth: 100,
-            maxWidth: 800,
-            minHeight: 100,
-            maxHeight: 400,
-          },
-        ],
-        [codeSyntaxHighlight],
-        tableMergedCell,
-        [
-          uml,
-          {
-            rendererURL: "http://www.plantuml.com/plantuml/svg/",
-          },
-        ],
-        youtubePlugin,
-        codepenPlugin,
-        hidePlugin,
-        configPlugin,
-        pptPlugin,
-      ]}
-      linkAttributes={{ target: "_blank" }}
-      customHTMLRenderer={{
-        heading(node: any, { entering, getChildrenText }: any) {
-          return {
-            type: entering ? "openTag" : "closeTag",
-            tagName: `h${node.level}`,
-            attributes: {
-              id: getChildrenText(node).trim().replaceAll(" ", "-"),
+const MarkdownViewerWrapper = forwardRef<any, ViewerWrapperProps>(
+  (props, ref) => {
+    return (
+      <Viewer
+        ref={ref}
+        initialValue={props.initialValue}
+        language="ko-KR"
+        plugins={[
+          [
+            chart,
+            {
+              minWidth: 100,
+              maxWidth: 800,
+              minHeight: 100,
+              maxHeight: 400,
             },
-          };
-        },
-        htmlBlock: {
-          iframe(node: any) {
-            const newAttrs = filterObjectKeys(node.attrs, [
-              "src",
-              "width",
-              "height",
-              "allow",
-              "allowfullscreen",
-              "frameborder",
-              "scrolling",
-            ]);
-
-            return [
-              {
-                type: "openTag",
-                tagName: "iframe",
-                outerNewLine: true,
-                attributes: newAttrs,
+          ],
+          [codeSyntaxHighlight],
+          tableMergedCell,
+          [
+            uml,
+            {
+              rendererURL: "http://www.plantuml.com/plantuml/svg/",
+            },
+          ],
+          youtubePlugin,
+          codepenPlugin,
+          hidePlugin,
+          configPlugin,
+          pptPlugin,
+        ]}
+        linkAttributes={{ target: "_blank" }}
+        customHTMLRenderer={{
+          heading(node: any, { entering, getChildrenText }: any) {
+            return {
+              type: entering ? "openTag" : "closeTag",
+              tagName: `h${node.level}`,
+              attributes: {
+                id: getChildrenText(node).trim().replaceAll(" ", "-"),
               },
-              { type: "html", content: node.childrenHTML },
-              { type: "closeTag", tagName: "iframe", outerNewLine: false },
-            ];
+            };
           },
-        },
-      }}
-    />
-  );
-};
+          htmlBlock: {
+            iframe(node: any) {
+              const newAttrs = filterObjectKeys(node.attrs, [
+                "src",
+                "width",
+                "height",
+                "allow",
+                "allowfullscreen",
+                "frameborder",
+                "scrolling",
+              ]);
+
+              return [
+                {
+                  type: "openTag",
+                  tagName: "iframe",
+                  outerNewLine: true,
+                  attributes: newAttrs,
+                },
+                { type: "html", content: node.childrenHTML },
+                { type: "closeTag", tagName: "iframe", outerNewLine: false },
+              ];
+            },
+          },
+        }}
+      />
+    );
+  }
+);
+
+MarkdownViewerWrapper.displayName = "MarkdownViewerWrapper";
 
 export default MarkdownViewerWrapper;

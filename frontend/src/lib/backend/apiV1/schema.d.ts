@@ -364,7 +364,9 @@ export type $defs = Record<string, never>;
 export interface operations {
     getItem: {
         parameters: {
-            query?: never;
+            query?: {
+                lastModifyDate?: string;
+            };
             header?: never;
             path: {
                 id: number;

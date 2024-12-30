@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotBlank
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -86,7 +87,8 @@ class ApiV1PostController(
     @Transactional(readOnly = true)
     @Operation(summary = "단건조회")
     fun getItem(
-        @PathVariable id: Long
+        @PathVariable id: Long,
+        lastModifyDate: LocalDateTime?
     ): PostWithContentDto {
         val post = postService.findById(id)
             .getOrThrow()
@@ -95,6 +97,15 @@ class ApiV1PostController(
             if (!rq.isLogin) throw ServiceException("403-1", "비공개글은 작성자만 조회할 수 있습니다.")
 
             postService.checkPermissionToRead(currentActor, post)
+        }
+
+        if (lastModifyDate != null && !post.modifyDate.isAfter(lastModifyDate)) {
+            throw ServiceException("409-1", "최신 데이터가 존재합니다.")
+        }
+
+        if (lastModifyDate != null) {
+            println("lastModifyDate: $lastModifyDate")
+            println("post.modifyDate: ${post.modifyDate}")
         }
 
         return PostWithContentDto(post)
