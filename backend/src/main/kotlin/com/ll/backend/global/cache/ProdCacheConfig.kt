@@ -1,5 +1,6 @@
 package com.ll.backend.global.cache
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
@@ -17,7 +18,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @EnableCaching
 @EnableConfigurationProperties(CacheConfigPropertiesList::class)
 class ProdCacheConfig(
-    private val cacheConfigPropertiesList: CacheConfigPropertiesList
+    private val cacheConfigPropertiesList: CacheConfigPropertiesList,
+    private val redisSerializerObjectMapper: ObjectMapper
 ) {
     @Bean
     fun cacheManager(redisConnectionFactory: RedisConnectionFactory): RedisCacheManager {
@@ -26,7 +28,7 @@ class ProdCacheConfig(
                 SerializationPair.fromSerializer(StringRedisSerializer())
             )
             .serializeValuesWith(
-                SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer())
+                SerializationPair.fromSerializer(GenericJackson2JsonRedisSerializer(redisSerializerObjectMapper))
             )
             .prefixCacheNameWith("app::")
 
