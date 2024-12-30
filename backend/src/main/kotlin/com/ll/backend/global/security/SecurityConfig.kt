@@ -24,6 +24,7 @@ class SecurityConfig(
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         httpSecurity {
             authorizeHttpRequests {
+                authorize("/api/*/youtube/**", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts/{id:\\d+}", permitAll)
                 authorize(HttpMethod.POST, "/api/*/members/login", permitAll)

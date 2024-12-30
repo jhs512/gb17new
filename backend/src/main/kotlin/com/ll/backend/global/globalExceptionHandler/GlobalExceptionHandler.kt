@@ -4,6 +4,7 @@ import com.ll.backend.global.app.AppConfig
 import com.ll.backend.global.exceptions.ServiceException
 import com.ll.backend.global.rsData.RsData
 import com.ll.backend.standard.base.Empty
+import com.ll.backend.standard.extensions.getOrDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -36,7 +37,7 @@ class GlobalExceptionHandler {
             .body(
                 RsData(
                     "404-1",
-                    "해당 데이터가 존재하지 않습니다."
+                    "data not found" + ex.message?.let { " : $it" }.getOrDefault("")
                 )
             )
     }

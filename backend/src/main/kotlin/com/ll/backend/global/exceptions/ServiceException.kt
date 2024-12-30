@@ -5,14 +5,19 @@ import com.ll.backend.standard.base.Empty
 
 class ServiceException(resultCode: String, msg: String) : RuntimeException("$resultCode : $msg") {
     private val resultCode by lazy {
-        message!!.split(":", limit = 2).toTypedArray()[0].trim()
+        rsData.resultCode
     }
 
     private val msg by lazy {
-        message!!.split(":", limit = 2).toTypedArray()[1].trim()
+        rsData.msg
     }
 
     val rsData by lazy {
-        RsData<Empty>(resultCode, msg)
+        val arr = message!!.split(":", limit = 2).toTypedArray()
+
+        RsData<Empty>(
+            arr[0].trim(),
+            arr[1].trim(),
+        )
     }
 }

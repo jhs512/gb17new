@@ -46,6 +46,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.session:spring-session-data-redis")
+
+    implementation("com.github.salomonbrys.kotson:kotson:2.5.0")
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 kotlin {
