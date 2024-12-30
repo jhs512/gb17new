@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping
 class GotoYoutubeByPlaylistController(
     private val fqYoutubeApiPlaylistEntryService: YoutubeApiPlaylistEntryService
 ) {
-    @GetMapping("/{position}")
-    fun gotoYoutubeByPosition(
+    @GetMapping("/{number}")
+    fun gotoYoutubeByNumber(
         @PathVariable playlistCode: String,
-        @PathVariable position: Int
+        @PathVariable number: Int
     ): ResponseEntity<String> = handleExceptions {
         val playlistEntryDtos = fqYoutubeApiPlaylistEntryService
             .findByPlaylistCode(playlistCode)
             .getOrThrow()
 
-        val playlistEntryDto = playlistEntryDtos[position]
+        val playlistEntryDto = playlistEntryDtos[number - 1]
         val url = "https://youtu.be/${playlistEntryDto.code}"
 
         // ResponseEntity 생성
