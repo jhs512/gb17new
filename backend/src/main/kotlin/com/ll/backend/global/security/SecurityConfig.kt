@@ -25,6 +25,7 @@ class SecurityConfig(
         httpSecurity {
             authorizeHttpRequests {
                 authorize("/api/*/youtube/**", permitAll)
+                authorize("/goto/**", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts", permitAll)
                 authorize(HttpMethod.GET, "/api/*/posts/{id:\\d+}", permitAll)
                 authorize(HttpMethod.POST, "/api/*/members/login", permitAll)

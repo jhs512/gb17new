@@ -129,7 +129,6 @@ export default async function Page({
               placeholder="검색어를 입력하세요"
               name="searchKeyword"
               defaultValue={searchKeyword || ""}
-              className="pl-8"
             />
           </form>
         </div>
