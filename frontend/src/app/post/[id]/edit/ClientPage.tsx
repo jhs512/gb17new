@@ -20,7 +20,7 @@ function parseConfig(content: string): {
     const configEndIndex = content.indexOf("$$", 2);
 
     if (configEndIndex === -1) {
-      return { title: "", published: false, content };
+      return { title: "", published: false, content: content.trim() };
     }
 
     const configSection = content.substring(8, configEndIndex);
@@ -40,9 +40,9 @@ function parseConfig(content: string): {
     });
 
     return {
-      title: config.title!!,
+      title: config.title!!.trim(),
       published: config.published!!,
-      content: mainContent,
+      content: mainContent.trim(),
     };
   }
 
@@ -50,7 +50,7 @@ function parseConfig(content: string): {
   return {
     title: "",
     published: false,
-    content,
+    content: content.trim(),
   };
 }
 
