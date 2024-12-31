@@ -4,9 +4,13 @@ import { useToast } from "@/hooks/use-toast";
 import type { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
 import hotkeys from "hotkeys-js";
-import { useEffect, useRef } from "react";
-import * as monaco from "monaco-editor";
-import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const MonacoEditor = dynamic(() => import("./MonacoEditor"), {
+  ssr: false,
+  loading: () => <div>에디터 로딩중...</div>,
+});
 
 interface Config {
   title: string;
@@ -52,17 +56,10 @@ export default function ClientPage({
   post: components["schemas"]["PostWithContentDto"];
 }) {
   const { toast } = useToast();
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoEl = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
 
-  const savePost = async () => {
-    if (!editorRef.current) return;
-
+  const savePost = async (value: string) => {
     try {
-      const { config, content } = parseConfig(
-        editorRef.current.getValue().trim()
-      );
+      const { config, content } = parseConfig(value.trim());
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
@@ -97,32 +94,6 @@ export default function ClientPage({
   };
 
   useEffect(() => {
-    if (monacoEl.current) {
-      editorRef.current = monaco.editor.create(monacoEl.current, {
-        value: `$$config
-title: ${post.title}
-published: ${post.published}
-$$
-
-${post.content || ""}`.trim(),
-        language: "markdown",
-        theme: "vs-dark",
-        tabSize: 2,
-        mouseWheelZoom: true,
-        automaticLayout: true,
-        minimap: { enabled: false },
-        fontSize: 14,
-        wordWrap: "on",
-        lineNumbers: "on",
-      });
-
-      return () => {
-        editorRef.current?.dispose();
-      };
-    }
-  }, [post.content, post.title, post.published, theme]);
-
-  useEffect(() => {
     hotkeys.filter = function () {
       return true;
     };
@@ -140,8 +111,16 @@ ${post.content || ""}`.trim(),
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div ref={monacoEl} className="flex-1" />
+    <div className="h-[calc(100vh-4rem)]">
+      <MonacoEditor
+        initialValue={`$$config
+title: ${post.title}
+published: ${post.published}
+$$
+
+${post.content || ""}`.trim()}
+        onSave={savePost}
+      />
     </div>
   );
 }
