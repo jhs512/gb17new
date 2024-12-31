@@ -3,8 +3,6 @@
 import { useToast } from "@/hooks/use-toast";
 import type { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
-import hotkeys from "hotkeys-js";
-import { useEffect } from "react";
 import dynamic from "next/dynamic";
 
 const MonacoEditor = dynamic(() => import("./MonacoEditor"), {
@@ -12,42 +10,48 @@ const MonacoEditor = dynamic(() => import("./MonacoEditor"), {
   loading: () => <div>에디터 로딩중...</div>,
 });
 
-interface Config {
+function parseConfig(content: string): {
   title: string;
   published: boolean;
-}
+  content: string;
+} {
+  // config 섹션이 있는지 확인
+  if (content.startsWith("$$config")) {
+    const configEndIndex = content.indexOf("$$", 2);
 
-function parseConfig(content: string): { config: Config; content: string } {
-  const configMatch = content.match(/^\$\$config\n([\s\S]*?)\n\$\$([\s\S]*)$/);
+    if (configEndIndex === -1) {
+      return { title: "", published: false, content };
+    }
 
-  if (!configMatch) {
+    const configSection = content.substring(8, configEndIndex);
+    const mainContent = content.substring(configEndIndex + 4);
+
+    // config 파싱
+    const configLines = configSection.split("\n");
+    const config: { [key: string]: any } = {};
+
+    configLines.forEach((line) => {
+      const [key, value] = line.split(": ").map((s) => s.trim());
+      if (key === "published") {
+        config[key] = value === "true";
+      } else {
+        config[key] = value;
+      }
+    });
+
     return {
-      config: {
-        title: "",
-        published: false,
-      },
-      content: content,
+      title: config.title!!,
+      published: config.published!!,
+      content: mainContent,
     };
   }
 
-  const configStr = configMatch[1];
-  const remainingContent = configMatch[2].trim();
-
-  const config: Config = {
+  // config 섹션이 없는 경우
+  return {
     title: "",
     published: false,
+    content,
   };
-
-  configStr.split("\n").forEach((line) => {
-    const [key, value] = line.split(":").map((s) => s.trim());
-    if (key === "title") {
-      config.title = value;
-    } else if (key === "published") {
-      config.published = value.toLowerCase() === "true";
-    }
-  });
-
-  return { config, content: remainingContent };
 }
 
 export default function ClientPage({
@@ -59,7 +63,7 @@ export default function ClientPage({
 
   const savePost = async (value: string) => {
     try {
-      const { config, content } = parseConfig(value.trim());
+      const { title, published, content } = parseConfig(value.trim());
 
       const res = await client.PUT("/api/v1/posts/{id}", {
         params: {
@@ -68,9 +72,9 @@ export default function ClientPage({
           },
         },
         body: {
-          title: config.title,
+          title: title,
           content: content,
-          published: config.published,
+          published: published,
         },
       });
 
@@ -92,23 +96,6 @@ export default function ClientPage({
       });
     }
   };
-
-  useEffect(() => {
-    hotkeys.filter = function () {
-      return true;
-    };
-
-    hotkeys("ctrl+s, command+s", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      savePost();
-      return false;
-    });
-
-    return () => {
-      hotkeys.unbind("ctrl+s, command+s");
-    };
-  }, []);
 
   return (
     <div className="h-[calc(100vh-4rem)]">
