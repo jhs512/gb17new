@@ -3,7 +3,6 @@ package com.ll.backend.global.initData
 import com.ll.backend.domain.member.member.service.MemberService
 import com.ll.backend.domain.post.author.entity.Author
 import com.ll.backend.domain.post.post.service.PostService
-import com.ll.backend.global.app.AppConfig
 import com.ll.backend.standard.extensions.getOrThrow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationRunner
@@ -36,26 +35,25 @@ class NotProdInitData(
         if (memberService.count() > 0) return
 
         val memberSystem = memberService.join("system", "1234", "시스템")
-        if (AppConfig.isNotProd()) memberSystem.refreshToken = "system-apikey"
+        memberSystem.refreshToken = "system-apikey"
 
         val memberAdmin = memberService.join("admin", "1234", "관리자")
-        if (AppConfig.isNotProd()) memberAdmin.refreshToken = "admin-apikey"
+        memberAdmin.refreshToken = "admin-apikey"
 
         val memberUser1 = memberService.join("user1", "1234", "유저1")
-        if (AppConfig.isNotProd()) memberUser1.refreshToken = "user1-apikey"
+        memberUser1.refreshToken = "user1-apikey"
 
         val memberUser2 = memberService.join("user2", "1234", "유저2")
-        if (AppConfig.isNotProd()) memberUser2.refreshToken = "user2-apikey"
+        memberUser2.refreshToken = "user2-apikey"
 
         val memberUser3 = memberService.join("user3", "1234", "유저3")
-        if (AppConfig.isNotProd()) memberUser3.refreshToken = "user3-apikey"
+        memberUser3.refreshToken = "user3-apikey"
 
         val memberDeveloper = memberService.join("KAKAO__3844789364", "", "장희성")
-        if (AppConfig.isNotProd()) {
-            memberDeveloper.refreshToken = "developer-apikey"
-            memberDeveloper.profileImgUrl =
-                "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg"
-        }
+
+        memberDeveloper.refreshToken = "developer-apikey"
+        memberDeveloper.profileImgUrl =
+            "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg"
     }
 
     @Transactional
