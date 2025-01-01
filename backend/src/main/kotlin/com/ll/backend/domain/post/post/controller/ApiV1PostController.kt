@@ -42,7 +42,7 @@ class ApiV1PostController(
     @Operation(summary = "공개글 다건조회")
     fun getItems(
         page: Int = 1,
-        @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        @Min(1) @Max(60) pageSize: Int = AppConfig.basePageSize,
         searchKeywordType: String = "",
         searchKeyword: String = ""
     ): PageDto<PostDto> {
@@ -65,7 +65,7 @@ class ApiV1PostController(
     @Operation(summary = "내글 다건조회")
     fun getMine(
         page: Int = 1,
-        @Min(1) @Max(50) pageSize: Int = AppConfig.basePageSize,
+        @Min(1) @Max(60) pageSize: Int = AppConfig.basePageSize,
         searchKeywordType: String = "",
         searchKeyword: String = ""
     ): PageDto<PostDto> {
@@ -101,11 +101,6 @@ class ApiV1PostController(
 
         if (lastModifyDate != null && !post.modifyDate.isAfter(lastModifyDate)) {
             throw ServiceException("409-1", "최신 데이터가 존재합니다.")
-        }
-
-        if (lastModifyDate != null) {
-            println("lastModifyDate: $lastModifyDate")
-            println("post.modifyDate: ${post.modifyDate}")
         }
 
         return PostWithContentDto(post)

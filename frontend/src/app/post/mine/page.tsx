@@ -94,7 +94,6 @@ export default async function Page({
         page,
         searchKeyword,
         searchKeywordType,
-        pageSize: 10,
       },
     },
     headers: {

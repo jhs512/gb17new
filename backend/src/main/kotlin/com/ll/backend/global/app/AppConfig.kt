@@ -30,7 +30,7 @@ class AppConfig(
         lateinit var genFileDirPath: String
         lateinit var siteName: String
         lateinit var objectMapper: ObjectMapper
-        const val basePageSize = 30
+        const val basePageSize = 60
 
         fun isNotProd(): Boolean {
             return true
