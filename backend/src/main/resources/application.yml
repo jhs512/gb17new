@@ -89,6 +89,6 @@ custom:
     dirPath: c:/temp/gb17_dev
   cache:
     short-lived:
-      ttl: 300
+      ttl: 180
     long-lived:
       ttl: 3600
