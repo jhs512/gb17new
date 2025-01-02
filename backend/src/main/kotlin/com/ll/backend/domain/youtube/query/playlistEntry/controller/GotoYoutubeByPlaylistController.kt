@@ -25,7 +25,11 @@ class GotoYoutubeByPlaylistController(
             .findByPlaylistCode(playlistCode)
             .getOrThrow()
 
-        val playlistEntryDto = playlistEntryDtos[number - 1]
+        val playlistEntryDto = if (number < 0) {
+            playlistEntryDtos[playlistEntryDtos.size + number]
+        } else {
+            playlistEntryDtos[number - 1]
+        }
         val url = "https://youtu.be/${playlistEntryDto.code}"
 
         // ResponseEntity 생성
