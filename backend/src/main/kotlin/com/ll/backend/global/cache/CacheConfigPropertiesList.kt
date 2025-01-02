@@ -10,7 +10,7 @@ data class CacheConfigPropertiesList(
     val longLived: CacheConfigProperties
 ) {
     private val cacheInfos = mapOf(
-        "fqYoutubeApiPlaylistEntryService__youtubePlaylistEntries" to shortLived,
+        "fqYoutubeApiPlaylistEntryService__youtubePlaylistEntries" to longLived,
         "fqYoutubeApiPlaylistService__youtubePlaylist" to longLived
     )
 
