@@ -17,17 +17,24 @@ export default function ClientPage({
   const lastModifyDateRef = useRef(post.modifyDate);
 
   useEffect(() => {
-    if (window.location.hash) {
-      setTimeout(() => {
-        const hash = decodeURIComponent(window.location.hash.substring(1));
-        const element = document.getElementById(hash);
-        if (element) {
-          setTimeout(() => {
-            element.scrollIntoView({ behavior: "smooth" });
-          }, 100);
-        }
-      }, 2000);
-    }
+    const checkAndScrollToElement = () => {
+      const hash = decodeURIComponent(window.location.hash.substring(1));
+      const element = document.getElementById(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        return true; // 엘리먼트를 찾았음
+      }
+      return false; // 엘리먼트를 찾지 못함
+    };
+
+    let attempts = 0;
+    const maxAttempts = 20; // 10초 / 0.5초 = 20회
+    const interval = setInterval(() => {
+      if (checkAndScrollToElement() || attempts >= maxAttempts) {
+        clearInterval(interval); // 엘리먼트를 찾았거나 최대 시도 횟수에 도달하면 중단
+      }
+      attempts++;
+    }, 500);
   }, []);
 
   useEffect(() => {
