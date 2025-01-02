@@ -17,6 +17,20 @@ export default function ClientPage({
   const lastModifyDateRef = useRef(post.modifyDate);
 
   useEffect(() => {
+    if (window.location.hash) {
+      setTimeout(() => {
+        const hash = decodeURIComponent(window.location.hash.substring(1));
+        const element = document.getElementById(hash);
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        }
+      }, 2000);
+    }
+  }, []);
+
+  useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     const checkForUpdates = async () => {
