@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 @RequestMapping("/goto/youtube/{playlistCode}")
-class GotoYoutubeByPlaylistController(
+class GotoYoutubeByPlaylistEntryController(
     private val fqYoutubeApiPlaylistEntryService: YoutubeApiPlaylistEntryService
 ) {
     @GetMapping("/{number}")
@@ -25,18 +25,30 @@ class GotoYoutubeByPlaylistController(
             .findByPlaylistCode(playlistCode)
             .getOrThrow()
 
-        val playlistEntryDto = if (number < 0) {
-            playlistEntryDtos[playlistEntryDtos.size + number]
+        val playlistEntryDtosIndex = if (number < 0) {
+            playlistEntryDtos.size + number
         } else {
-            playlistEntryDtos[number - 1]
+            number - 1
         }
+
+        if (playlistEntryDtosIndex < 0 || playlistEntryDtosIndex >= playlistEntryDtos.size) {
+            val url = "https://www.youtube.com/playlist?list=$playlistCode"
+
+            // ResponseEntity 생성
+            return ResponseEntity.status(HttpStatus.FOUND) // 302 상태 코드
+                .header(HttpHeaders.LOCATION, url) // 리다이렉션 URL 설정
+                .header(HttpHeaders.CACHE_CONTROL, "max-age=1800") // 30분 동안 캐시
+                .build()
+        }
+
+        val playlistEntryDto = playlistEntryDtos[playlistEntryDtosIndex]
 
         val url = "https://youtu.be/${playlistEntryDto.code}"
 
         // ResponseEntity 생성
         return ResponseEntity.status(HttpStatus.FOUND) // 302 상태 코드
             .header(HttpHeaders.LOCATION, url) // 리다이렉션 URL 설정
-            .header(HttpHeaders.CACHE_CONTROL, "max-age=120") // 2분 동안 캐시
+            .header(HttpHeaders.CACHE_CONTROL, "max-age=1800") // 2분 동안 캐시
             .build()
     }
 }
