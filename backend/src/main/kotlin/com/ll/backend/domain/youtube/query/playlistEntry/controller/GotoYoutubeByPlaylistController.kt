@@ -30,6 +30,7 @@ class GotoYoutubeByPlaylistController(
         } else {
             playlistEntryDtos[number - 1]
         }
+
         val url = "https://youtu.be/${playlistEntryDto.code}"
 
         // ResponseEntity 생성
